@@ -145,6 +145,25 @@
         "barra-arredondada": "assets/format-medallions/frutas-vermelhas/barra-arredondada.webp",
         "floral": "assets/format-medallions/frutas-vermelhas/floral.webp",
         "massageador": "assets/format-medallions/frutas-vermelhas/massageador.webp"
+      },
+      "sceneLayers": {
+        "desktopBackground": "assets/scene-layers/frutas-vermelhas/backgrounds/frutas-vermelhas-desktop.webp",
+        "mobileBackground": "assets/scene-layers/frutas-vermelhas/backgrounds/frutas-vermelhas-mobile.webp",
+        "products": {
+          "coracoezinhos": "assets/scene-layers/frutas-vermelhas/products/coracoezinhos.webp",
+          "mini-florzinhas": "assets/scene-layers/frutas-vermelhas/products/mini-florzinhas.webp",
+          "patinha-m": "assets/scene-layers/frutas-vermelhas/products/patinha-m.webp",
+          "patinha-g": "assets/scene-layers/frutas-vermelhas/products/patinha-g.webp",
+          "barra-arredondada": "assets/scene-layers/frutas-vermelhas/products/barra-arredondada.webp",
+          "floral": "assets/scene-layers/frutas-vermelhas/products/floral.webp",
+          "massageador": "assets/scene-layers/frutas-vermelhas/products/massageador.webp"
+        },
+        "foreground": {
+          "topLeft": "assets/scene-layers/frutas-vermelhas/parallax/botanica-superior-esquerda.webp",
+          "topRight": "assets/scene-layers/frutas-vermelhas/parallax/botanica-superior-direita.webp",
+          "bottomLeft": "assets/scene-layers/frutas-vermelhas/parallax/botanica-inferior-esquerda.webp",
+          "bottomRight": "assets/scene-layers/frutas-vermelhas/parallax/botanica-inferior-direita.webp"
+        }
       }
     },
     {

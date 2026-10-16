@@ -64,6 +64,78 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly touchStart = (event: TouchEvent): void => this.onTouchStart(event);
   private readonly touchEnd = (event: TouchEvent): void => this.onTouchEnd(event);
   private readonly pointerMove = (event: PointerEvent): void => this.onPointerMove(event);
+  private layeredFragranceId: string | null = null;
+  private readonly loadedSceneAssets = new Map<string, Promise<void>>();
+  readonly layeredReady = signal(false);
+  readonly displayedProductSrc = signal<string | null>(null);
+  readonly layeredScene = computed(() => this.layeredReady() ? this.active()?.sceneLayers ?? null : null);
+
+  /**
+   * Keep the existing, proven composition visible until both the backdrop and
+   * the transparent soap have decoded. Do not flash empty images on slow mobile
+   * connections or show a previous fragrance's product while a new one loads.
+   */
+  private readonly sceneAssetEffect = effect((onCleanup) => {
+    const fragrance = this.active();
+    const formatId = this.selectedFormatId();
+    const assets = fragrance?.sceneLayers;
+    const src = assets?.products[formatId];
+    if (!fragrance || !assets || !src) {
+      this.layeredFragranceId = null;
+      this.layeredReady.set(false);
+      this.displayedProductSrc.set(null);
+      return;
+    }
+
+    const isNewFragrance = this.layeredFragranceId !== fragrance.id;
+    this.layeredFragranceId = fragrance.id;
+    if (isNewFragrance) {
+      this.layeredReady.set(false);
+      this.displayedProductSrc.set(null);
+    }
+
+    let cancelled = false;
+    const portrait = window.matchMedia('(max-width: 720px), (orientation: portrait) and (max-width: 1200px)').matches;
+    const background = portrait ? assets.mobileBackground : assets.desktopBackground;
+    Promise.all([this.ensureSceneImage(background), this.ensureSceneImage(src)])
+      .then(() => {
+        if (cancelled) return;
+        const wasVisible = this.layeredReady();
+        this.displayedProductSrc.set(src);
+        this.layeredReady.set(true);
+        if (wasVisible && !this.prefersReduced.matches) {
+          requestAnimationFrame(() => {
+            gsap.fromTo('.scene-layered-soap', { autoAlpha: .25, scale: .965 },
+              { autoAlpha: 1, scale: 1, duration: .48, ease: 'power2.out', overwrite: true, clearProps: 'transform,opacity,visibility' });
+          });
+        }
+      })
+      .catch(() => {
+        if (cancelled) return;
+        this.layeredReady.set(false);
+        this.displayedProductSrc.set(null);
+      });
+
+    onCleanup(() => { cancelled = true; });
+  });
+
+  private ensureSceneImage(url: string): Promise<void> {
+    const cached = this.loadedSceneAssets.get(url);
+    if (cached) return cached;
+    const pending = new Promise<void>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error('Scene image could not load: ' + url));
+      image.src = url;
+      if (image.complete && image.naturalWidth > 0) resolve();
+    }).catch((error) => {
+      this.loadedSceneAssets.delete(url);
+      throw error;
+    });
+    this.loadedSceneAssets.set(url, pending);
+    return pending;
+  }
+
 
   readonly catalog = signal<Catalog | null>(null);
   readonly activeIndex = signal(0);
@@ -182,6 +254,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cancelFormatFrame();
     this.dragMomentum?.kill();
     this.captionTransition?.kill();
+    this.loadedSceneAssets.clear();
     this.formatDrag = null;
     gsap.killTweensOf('.scene-backdrop, .scene-product, .scene-title, .scene-copy, .scene-button, .ambient-layer');
   }
@@ -555,6 +628,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const y = event.clientY / window.innerHeight - .5;
     gsap.to(area.querySelector('.ambient-layer'), { x: x*16, y: y*12, duration: 1.6, overwrite: true, ease: 'power2.out' });
     gsap.to(area.querySelector('.botanical-foreground'), { x: x*-19, y: y*-12, duration: 1.9, overwrite: true, ease: 'power2.out' });
+    if (this.layeredReady()) {
+      gsap.to(area.querySelector('.scene-layered-stage'), { x: x*-17, y: y*-12, duration: 1.45, overwrite: true, ease: 'power2.out' });
+      gsap.to(area.querySelector('.scene-layered-foliage'), { x: x*11, y: y*9, duration: 2.1, overwrite: true, ease: 'power2.out' });
+    }
   }
 
   private preloadAssets(): void {
