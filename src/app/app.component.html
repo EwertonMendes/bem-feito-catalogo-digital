@@ -1,8 +1,8 @@
 <div class="app-shell" #stage [style.--ink]="active()?.colors?.ink" [style.--accent]="active()?.colors?.accent" [style.--vignette]="active()?.colors?.vignette" [style.--ambient]="active()?.colors?.ambient">
   @if (loading()) {
-    <div class="loading-screen" role="status"><img src="/assets/brand/bem-feito-logo.png" alt="Bem Feito" /><span>Preparando uma experiência sensorial...</span></div>
+    <div class="loading-screen" role="status"><img src="assets/brand/bem-feito-logo.png" alt="Bem Feito" /><span>Preparando uma experiência sensorial...</span></div>
   } @else if (error()) {
-    <main class="error-screen"><img src="/assets/brand/bem-feito-logo.png" alt="Bem Feito" /><h1>Não conseguimos carregar o catálogo.</h1><p>Verifique sua conexão ou tente atualizar a página.</p><button type="button" (click)="openInstagram()">Visitar Instagram</button></main>
+    <main class="error-screen"><img src="assets/brand/bem-feito-logo.png" alt="Bem Feito" /><h1>Não conseguimos carregar o catálogo.</h1><p>Verifique sua conexão ou tente atualizar a página.</p><button type="button" (click)="openInstagram()">Visitar Instagram</button></main>
   } @else if (active(); as fragrance) {
     <main class="experience" aria-label="Catálogo sensorial Bem Feito">
       <!-- The scene is edge-to-edge. Background and foreground are independently animated. -->
@@ -19,7 +19,7 @@
         <div class="scene-shadow"></div>
         <div class="scene-shimmer"></div>
         <div class="botanical-foreground" aria-hidden="true">
-          <img src="/assets/brand/botanical.svg" alt="" />
+          <img src="assets/brand/botanical.svg" alt="" />
         </div>
       </div>
 
