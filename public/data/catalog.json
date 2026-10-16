@@ -3,7 +3,7 @@
     "name": "Bem Feito",
     "tagline": "Cuidado em cada detalhe",
     "instagram": "https://www.instagram.com/usebemfeito/",
-    "logo": "/assets/brand/bem-feito-logo.png"
+    "logo": "assets/brand/bem-feito-logo.png"
   },
   "config": {
     "disclaimer": "A coloração dos sabonetes pode sofrer alterações. Imagens ilustrativas do conceito visual.",
@@ -100,12 +100,12 @@
         "coracoezinhos"
       ],
       "images": {
-        "desktopHero": "/assets/fragrances/frutas-vermelhas/desktopHero.webp",
-        "mobileHero": "/assets/fragrances/frutas-vermelhas/mobileHero.webp",
-        "desktopBackground": "/assets/fragrances/frutas-vermelhas/desktopBackground.webp",
-        "mobileBackground": "/assets/fragrances/frutas-vermelhas/mobileBackground.webp",
-        "avatar": "/assets/fragrances/frutas-vermelhas/avatar.webp",
-        "detail": "/assets/fragrances/frutas-vermelhas/detail.webp"
+        "desktopHero": "assets/fragrances/frutas-vermelhas/desktopHero.webp",
+        "mobileHero": "assets/fragrances/frutas-vermelhas/mobileHero.webp",
+        "desktopBackground": "assets/fragrances/frutas-vermelhas/desktopBackground.webp",
+        "mobileBackground": "assets/fragrances/frutas-vermelhas/mobileBackground.webp",
+        "avatar": "assets/fragrances/frutas-vermelhas/avatar.webp",
+        "detail": "assets/fragrances/frutas-vermelhas/detail.webp"
       }
     },
     {
@@ -133,12 +133,12 @@
         "coracoezinhos"
       ],
       "images": {
-        "desktopHero": "/assets/fragrances/lavanda-francesa/desktopHero.webp",
-        "mobileHero": "/assets/fragrances/lavanda-francesa/mobileHero.webp",
-        "desktopBackground": "/assets/fragrances/lavanda-francesa/desktopBackground.webp",
-        "mobileBackground": "/assets/fragrances/lavanda-francesa/mobileBackground.webp",
-        "avatar": "/assets/fragrances/lavanda-francesa/avatar.webp",
-        "detail": "/assets/fragrances/lavanda-francesa/detail.webp"
+        "desktopHero": "assets/fragrances/lavanda-francesa/desktopHero.webp",
+        "mobileHero": "assets/fragrances/lavanda-francesa/mobileHero.webp",
+        "desktopBackground": "assets/fragrances/lavanda-francesa/desktopBackground.webp",
+        "mobileBackground": "assets/fragrances/lavanda-francesa/mobileBackground.webp",
+        "avatar": "assets/fragrances/lavanda-francesa/avatar.webp",
+        "detail": "assets/fragrances/lavanda-francesa/detail.webp"
       }
     },
     {
@@ -166,12 +166,12 @@
         "coracoezinhos"
       ],
       "images": {
-        "desktopHero": "/assets/fragrances/capim-limao/desktopHero.webp",
-        "avatar": "/assets/fragrances/capim-limao/avatar.webp",
-        "detail": "/assets/fragrances/capim-limao/detail.webp",
-        "mobileHero": "/assets/fragrances/capim-limao/mobileHero.webp",
-        "desktopBackground": "/assets/fragrances/capim-limao/desktopBackground.webp",
-        "mobileBackground": "/assets/fragrances/capim-limao/mobileBackground.webp"
+        "desktopHero": "assets/fragrances/capim-limao/desktopHero.webp",
+        "avatar": "assets/fragrances/capim-limao/avatar.webp",
+        "detail": "assets/fragrances/capim-limao/detail.webp",
+        "mobileHero": "assets/fragrances/capim-limao/mobileHero.webp",
+        "desktopBackground": "assets/fragrances/capim-limao/desktopBackground.webp",
+        "mobileBackground": "assets/fragrances/capim-limao/mobileBackground.webp"
       }
     }
   ]
