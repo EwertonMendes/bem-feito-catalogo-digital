@@ -81,3 +81,7 @@ O carrossel preserva as setas condicionais, o arraste horizontal no desktop,
 o toque no celular e a seleção independente da fragrância. Os arquivos WebP
 de formatos anteriores permanecem apenas como recursos legados não usados no
 renderizador, para remoção após aprovação da nova identidade.
+
+## Fotos de formatos nos medalhões
+
+A fragrância Frutas Vermelhas utiliza recortes WebP com fundo transparente em `public/assets/format-medallions/frutas-vermelhas/` (128 × 128 px para uso nos medalhões). Os caminhos são declarados por formato em `fragrances[].medallionImages` no `public/data/catalog.json`. Fragrâncias sem fotografias de seus próprios formatos usam ilustrações SVG, evitando misturar cores de outras fragrâncias. O componente de apresentação mantém GSAP, hover, acessibilidade, navegação lateral e toques, sem alterações no fluxo de navegação.

@@ -136,6 +136,15 @@
           "small": "assets/formats/frutas-vermelhas/coracoezinhos-640.webp",
           "large": "assets/formats/frutas-vermelhas/coracoezinhos-1200.webp"
         }
+      },
+      "medallionImages": {
+        "coracoezinhos": "assets/format-medallions/frutas-vermelhas/coracoezinhos.webp",
+        "mini-florzinhas": "assets/format-medallions/frutas-vermelhas/mini-florzinhas.webp",
+        "patinha-m": "assets/format-medallions/frutas-vermelhas/patinha-m.webp",
+        "patinha-g": "assets/format-medallions/frutas-vermelhas/patinha-g.webp",
+        "barra-arredondada": "assets/format-medallions/frutas-vermelhas/barra-arredondada.webp",
+        "floral": "assets/format-medallions/frutas-vermelhas/floral.webp",
+        "massageador": "assets/format-medallions/frutas-vermelhas/massageador.webp"
       }
     },
     {
