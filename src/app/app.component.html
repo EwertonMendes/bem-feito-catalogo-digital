@@ -7,15 +7,37 @@
     <main class="experience" aria-label="Catálogo sensorial Bem Feito">
       <!-- The scene is edge-to-edge. Background and foreground are independently animated. -->
       <div class="photographic-scene" aria-hidden="true">
-        <picture class="scene-backdrop scene-backdrop-visual">
-          <source media="(max-width: 720px), (orientation: portrait) and (max-width: 1200px)" [srcset]="fragrance.images.mobileBackground" />
-          <img [src]="fragrance.images.desktopBackground" alt="" />
-        </picture>
-        <div class="ambient-layer"></div>
-        <picture class="scene-product">
-          <source media="(max-width: 720px), (orientation: portrait) and (max-width: 1200px)" [srcset]="fragrance.images.mobileHero" />
-          <img [src]="fragrance.images.desktopHero" alt="" [attr.fetchpriority]="activeIndex() === 0 ? 'high' : 'auto'" />
-        </picture>
+        @if (layeredScene(); as layers) {
+          <picture class="scene-backdrop scene-backdrop-visual scene-layered-background">
+            <source media="(max-width: 720px), (orientation: portrait) and (max-width: 1200px)" [srcset]="layers.mobileBackground" />
+            <img [src]="layers.desktopBackground" alt="" />
+          </picture>
+          <div class="ambient-layer"></div>
+          <div class="scene-product scene-layered-stage">
+            <div class="layered-product-frame">
+              <span class="layered-grounding"></span>
+              <img class="scene-layered-soap" [src]="displayedProductSrc()" alt="" />
+            </div>
+          </div>
+          @if (layers.foreground; as foliage) {
+            <div class="scene-layered-foliage" aria-hidden="true">
+              @if (foliage.topLeft) { <img class="foliage-top-left" [src]="foliage.topLeft" alt="" /> }
+              @if (foliage.topRight) { <img class="foliage-top-right" [src]="foliage.topRight" alt="" /> }
+              @if (foliage.bottomLeft) { <img class="foliage-bottom-left" [src]="foliage.bottomLeft" alt="" /> }
+              @if (foliage.bottomRight) { <img class="foliage-bottom-right" [src]="foliage.bottomRight" alt="" /> }
+            </div>
+          }
+        } @else {
+          <picture class="scene-backdrop scene-backdrop-visual">
+            <source media="(max-width: 720px), (orientation: portrait) and (max-width: 1200px)" [srcset]="fragrance.images.mobileBackground" />
+            <img [src]="fragrance.images.desktopBackground" alt="" />
+          </picture>
+          <div class="ambient-layer"></div>
+          <picture class="scene-product">
+            <source media="(max-width: 720px), (orientation: portrait) and (max-width: 1200px)" [srcset]="fragrance.images.mobileHero" />
+            <img [src]="fragrance.images.desktopHero" alt="" [attr.fetchpriority]="activeIndex() === 0 ? 'high' : 'auto'" />
+          </picture>
+        }
         <div class="scene-shadow"></div>
         <div class="scene-shimmer"></div>
         <div class="botanical-foreground" aria-hidden="true">

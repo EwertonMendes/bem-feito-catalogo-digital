@@ -15,6 +15,20 @@ export interface FormatImageSources {
   large: string;
 }
 
+/** Independent, browser-optimised scene layers. File paths are site-relative. */
+export interface LayeredSceneAssets {
+  desktopBackground: string;
+  mobileBackground: string;
+  products: Record<string, string>;
+  /** Optional botanical overlays in front of the scene, without text. */
+  foreground?: {
+    topLeft?: string;
+    topRight?: string;
+    bottomLeft?: string;
+    bottomRight?: string;
+  };
+}
+
 export interface Fragrance {
   id: string;
   name: string;
@@ -31,6 +45,8 @@ export interface Fragrance {
   /** Transparent medallion artwork, keyed by format and available per fragrance. */
   medallionImages?: Record<string, string>;
   images: FragranceAssets;
+  /** Progressive enhancement: if any required artwork fails, the original scene stays visible. */
+  sceneLayers?: LayeredSceneAssets;
 }
 
 export interface ProductFormat {

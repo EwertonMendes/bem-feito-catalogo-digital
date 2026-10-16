@@ -51,6 +51,7 @@ jobs:
             test -s "dist/bem-feito-essencia-viva/browser/assets/format-medallions/frutas-vermelhas/${formato}.webp"
           done
           grep -q 'bem-feito-catalogo-digital/' dist/bem-feito-essencia-viva/browser/index.html
+          node scripts/validate-layered-assets.mjs
           touch dist/bem-feito-essencia-viva/browser/.nojekyll
 
       - name: Configurar GitHub Pages
