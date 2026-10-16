@@ -172,7 +172,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private animateInitial(): void {
     if (!this.active()) return;
     gsap.fromTo('.brand-logo', { y: -12, opacity: 0 }, { y: 0, opacity: 1, duration: .9, ease: 'power2.out' });
-    gsap.fromTo('.format-option', { y: 17, opacity: 0 }, { y: 0, opacity: 1, duration: .75, delay: .33, stagger: .07, ease: 'power2.out' });
+    // Keep cards within their viewport while introducing them with a brief, subtle settling motion.
+    // Clear GSAP inline transforms afterwards so CSS hover/selection styles remain authoritative.
+    gsap.fromTo('.format-option',
+      { y: 5, opacity: 0 },
+      { y: 0, opacity: 1, duration: .38, delay: .12, stagger: .035, ease: 'power2.out', clearProps: 'transform,opacity' });
     gsap.fromTo('.scene-title', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'power3.out' });
     gsap.fromTo('.scene-copy, .scene-button', { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: .85, stagger: .12, delay: .2, ease: 'power2.out' });
     gsap.fromTo('.scene-product', { scale: 1.055, opacity: .5 }, { scale: 1, opacity: 1, duration: 1.5, ease: 'power2.out' });

@@ -48,7 +48,6 @@
 
       <div class="right-fragrances" aria-label="Escolher fragrância">
         <span class="rail-heading">FRAGRÂNCIAS</span>
-        <span class="rail-count">{{ currentNumber() }} <small>/</small> {{ totalNumber() }}</span>
         <div class="fragrance-trail">
           @for (item of fragrances(); track item.id; let i = $index) {
             <button type="button" class="fragrance-rail-item" [class.is-current]="isSelected(i)" [disabled]="transitioning()" (click)="goTo(i)" [attr.aria-label]="'Ver fragrância ' + item.name" [attr.aria-current]="isSelected(i) ? 'true' : null">
