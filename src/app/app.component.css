@@ -92,8 +92,8 @@
 .rail-scroll-note { display: flex; align-items: center; gap: 14px; align-self: flex-end; margin-top: 38px; max-width: 120px; font-size: 10px; letter-spacing: .25em; line-height: 1.5; text-align: left; opacity: .84; }
 .mini-mouse { position: relative; display: block; flex-shrink: 0; width: 16px; height: 27px; border: 1px solid currentColor; border-radius: 9px; }
 .mini-mouse::before { content: ''; position: absolute; width: 1px; height: 7px; background: currentColor; left: 7px; top: 4px; }
-/* A centered, continuous botanical selector rather than a grid of generic cards.
-   The viewport is symmetrical about the SCREEN center, not the text column. */
+/* Centered 16:9 gallery. Images are optional until their final artwork exists.
+   The selector is usable while its image areas remain deliberately empty. */
 .format-carousel {
   left: 50%;
   transform: translateX(-50%);
@@ -108,101 +108,83 @@
   align-items: stretch;
   gap: 12px;
   width: 100%;
-  min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
   padding: 8px 5px 10px;
-  scrollbar-width: none;
   scroll-snap-type: x proximity;
   overscroll-behavior-x: contain;
+  scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 1.5%, black 98.5%, transparent 100%);
   mask-image: linear-gradient(to right, transparent 0%, black 1.5%, black 98.5%, transparent 100%);
 }
 .format-viewport::-webkit-scrollbar { display: none; }
+.format-viewport.is-dragging { scroll-snap-type: none; cursor: grabbing; }
+.format-viewport.is-dragging .format-option { cursor: grabbing; }
 .format-option {
   position: relative;
-  flex: 0 0 clamp(168px, 12vw, 196px);
-  height: clamp(83px, 10.6dvh, 98px);
+  flex: 0 0 clamp(170px, 13vw, 226px);
+  aspect-ratio: 16 / 9;
+  height: auto;
   min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border: 1px solid color-mix(in srgb, var(--accent) 39%, transparent);
-  border-radius: 15px 4px 15px 4px;
-  padding: 14px 14px 13px 12px;
-  color: var(--ink);
-  background:
-    radial-gradient(ellipse at 12% 20%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 72%),
-    linear-gradient(125deg, color-mix(in srgb, var(--vignette) 61%, transparent), rgba(8, 9, 7, .58));
-  box-shadow: inset 0 0 18px rgba(255, 240, 213, .03), 0 8px 21px rgba(0,0,0,.16);
+  padding: 0;
+  display: block;
+  isolation: isolate;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 11px;
+  background: linear-gradient(145deg,
+    color-mix(in srgb, var(--vignette) 63%, transparent),
+    color-mix(in srgb, var(--ambient) 31%, rgba(7,9,8,.52)));
+  box-shadow: 0 7px 22px rgba(0,0,0,.19);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   scroll-snap-align: start;
-  text-align: left;
   cursor: pointer;
   overflow: hidden;
-  transition: border-color .25s, background .25s, box-shadow .25s, transform .25s;
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
 }
-.format-option::before {
+.format-option::after {
   content: '';
   position: absolute;
+  z-index: 1;
+  pointer-events: none;
   inset: 4px;
-  border: 1px solid rgba(255,244,217,.095);
-  border-radius: 11px 2px 11px 2px;
+  border: 1px solid rgba(255,246,229,.075);
+  border-radius: 7px;
+}
+.format-image-slot {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+.format-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
   pointer-events: none;
 }
 .format-option:hover {
   transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--accent) 85%, transparent);
-  box-shadow: 0 9px 25px rgba(0,0,0,.2);
+  border-color: color-mix(in srgb, var(--accent) 84%, transparent);
+  box-shadow: 0 9px 25px rgba(0,0,0,.23);
 }
 .format-option.is-selected {
-  border-color: color-mix(in srgb, var(--accent) 89%, #fff);
-  background:
-    radial-gradient(ellipse at 12% 20%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 74%),
-    linear-gradient(125deg, color-mix(in srgb, var(--ambient) 69%, transparent), rgba(7, 8, 6, .65));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 27%, transparent),
-    0 0 20px color-mix(in srgb, var(--accent) 22%, transparent), 0 10px 25px rgba(0,0,0,.22);
+  border-color: color-mix(in srgb, var(--accent) 92%, #fff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 33%, transparent),
+    0 0 21px color-mix(in srgb, var(--accent) 24%, transparent), 0 11px 27px rgba(0,0,0,.25);
 }
-.format-option:disabled { opacity: .4; cursor: not-allowed; }
+.format-option:disabled { opacity: .40; cursor: not-allowed; }
 .format-option:disabled:hover { transform: none; }
 .format-option:focus-visible,
 .format-arrow:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-.format-ornament {
-  flex: 0 0 47px;
-  height: 53px;
-  display: grid;
-  place-items: center;
-  border-right: 1px solid rgba(255,244,215,.24);
-  color: color-mix(in srgb, var(--accent) 75%, #fffaf0);
-  padding-right: 9px;
-}
-.format-ornament svg { width: 41px; height: 41px; }
-.format-information { display: flex; min-width: 0; flex-direction: column; gap: 7px; }
-.format-name {
-  font-family: var(--serif);
-  font-size: clamp(17px, 1.24vw, 21px);
-  font-weight: 400;
-  line-height: 1.07;
-  letter-spacing: -.025em;
-  overflow-wrap: normal;
-  text-wrap: balance;
-}
-.format-meta { font-size: 10px; line-height: 1.1; letter-spacing: .09em; opacity: .72; white-space: nowrap; }
-.format-active-mark {
-  position: absolute;
-  height: 2px;
-  left: 30%;
-  right: 30%;
-  bottom: 0;
-  background: var(--accent);
-  opacity: 0;
-  transform: scaleX(.4);
-  transition: opacity .25s, transform .25s;
-}
-.format-option.is-selected .format-active-mark { opacity: 1; transform: scaleX(1); }
 .format-arrow {
   position: absolute;
   z-index: 2;
@@ -295,7 +277,7 @@
   .scene-title { font-size: clamp(46px,5vw,72px); line-height: .9; }
   .scene-copy { font-size: 14px; margin-bottom: 16px; max-width: 340px; }
   .format-carousel { bottom: 2.2dvh; }
-  .format-option { height: 66px; }
+  .format-option { flex-basis: clamp(140px, 12vw, 190px); }
   .brand-logo { width: 86px; }
   .side-menu { gap: 9px; }
   .right-fragrances { top: 9%; }
@@ -367,12 +349,8 @@
     width: calc(100% - 28px);
     bottom: max(90px, env(safe-area-inset-bottom, 0px) + 80px);
   }
-  .format-viewport { gap: 9px; padding: 5px 3px 7px; touch-action: none; }
-  .format-option { flex-basis: 160px; height: 76px; padding: 12px; gap: 9px; border-radius: 12px 4px 12px 4px; }
-  .format-ornament { flex-basis: 36px; height: 42px; padding-right: 6px; }
-  .format-ornament svg { width: 32px; height: 32px; }
-  .format-name { font-size: 17px; }
-  .format-meta { font-size: 10px; }
+  .format-viewport { gap: 9px; padding: 5px 3px 7px; touch-action: pan-x; }
+  .format-option { flex-basis: clamp(135px, 44vw, 175px); border-radius: 9px; }
   .format-arrow { display: none; }
   .mobile-swipe-hint { bottom: max(20px,env(safe-area-inset-bottom, 0px) + 10px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; flex-direction: column; gap: 8px; width: 220px; color: #fff; font-size: 9px; line-height: 1.5; text-align: center; letter-spacing: .19em; text-shadow: 0 2px 7px rgba(0,0,0,.58); }
   .hint-up { width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(255,255,255,.8); font-size: 22px; font-weight: 200; line-height: 31px; }
@@ -391,8 +369,7 @@
   .scene-copy { font-size: 12px; line-height: 1.27; max-width: 31ch; margin-bottom: 10px; }
   .mobile-steps { top: 28%; }
   .format-carousel { bottom: max(66px,env(safe-area-inset-bottom, 0px) + 57px); }
-  .format-option { height: 62px; }
-  .format-ornament { height: 37px; }
+  .format-option { flex-basis: 125px; }
   .mobile-swipe-hint { bottom: 10px; }
 }
 @media (max-width: 350px) {
@@ -421,11 +398,7 @@
   .mobile-steps { top: 34%; right: 4vw; gap: 21px; }
   .mobile-steps button { width: 10px; height: 10px; }
   .format-carousel { left: 50%; right: auto; width: 86%; bottom: max(112px,9dvh); }
-  .format-option { flex-basis: 205px; height: 93px; padding: 17px; }
-  .format-ornament { flex-basis: 48px; height: 55px; }
-  .format-ornament svg { width: 43px; height: 43px; }
-  .format-name { font-size: 23px; }
-  .format-meta { font-size: 13px; }
+  .format-option { flex-basis: 205px; }
   .mobile-swipe-hint { bottom: max(25px, 3dvh); width: 300px; font-size: 13px; gap: 14px; }
   .hint-up { width: 37px; height: 37px; line-height: 43px; font-size: 32px; }
   .mobile-serial { bottom: 5dvh; right: 4vw; font-size: 16px; }
