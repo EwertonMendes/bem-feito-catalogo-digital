@@ -1,0 +1,178 @@
+{
+  "brand": {
+    "name": "Bem Feito",
+    "tagline": "Cuidado em cada detalhe",
+    "instagram": "https://www.instagram.com/usebemfeito/",
+    "logo": "/assets/brand/bem-feito-logo.png"
+  },
+  "config": {
+    "disclaimer": "A coloração dos sabonetes pode sofrer alterações. Imagens ilustrativas do conceito visual.",
+    "defaultFormat": "barra-arredondada"
+  },
+  "formats": [
+    {
+      "id": "barra-arredondada",
+      "name": "Barra arredondada",
+      "weight": "≈ 90 g",
+      "prices": {
+        "classica": 11,
+        "mais-aroma": 14
+      }
+    },
+    {
+      "id": "massageador",
+      "name": "Massageador",
+      "weight": "≈ 120 g",
+      "prices": {
+        "classica": 14,
+        "mais-aroma": 17
+      }
+    },
+    {
+      "id": "patinha-m",
+      "name": "Patinha M",
+      "weight": "≈ 40 g",
+      "prices": {
+        "classica": 6,
+        "mais-aroma": 8
+      }
+    },
+    {
+      "id": "patinha-g",
+      "name": "Patinha G",
+      "weight": "≈ 60 g",
+      "prices": {
+        "classica": 8,
+        "mais-aroma": 10
+      }
+    },
+    {
+      "id": "mini-florzinhas",
+      "name": "Mini Florzinhas",
+      "weight": "≈ 5 g",
+      "prices": {
+        "classica": 2,
+        "mais-aroma": 2.6
+      }
+    },
+    {
+      "id": "floral",
+      "name": "Floral",
+      "weight": "≈ 90 g",
+      "prices": {
+        "classica": 13,
+        "mais-aroma": 16
+      }
+    },
+    {
+      "id": "coracoezinhos",
+      "name": "Coraçõezinhos",
+      "weight": "≈ 1,5 g",
+      "prices": {
+        "classica": 1.2,
+        "mais-aroma": 1.6
+      }
+    }
+  ],
+  "fragrances": [
+    {
+      "id": "frutas-vermelhas",
+      "name": "Frutas Vermelhas",
+      "collection": "classica",
+      "collectionLabel": "Coleção clássica",
+      "description": "Frutada, doce e vibrante. Uma fragrância alegre e suculenta que desperta boas sensações.",
+      "family": "Frutada • Adocicada",
+      "aroma": "Notas de frutas vermelhas, com perfil doce, suculento e delicado.",
+      "feeling": "Alegria, frescor e aconchego.",
+      "colors": {
+        "ink": "#fff6ec",
+        "accent": "#f6b0a4",
+        "vignette": "#310b15",
+        "ambient": "#751b31"
+      },
+      "availableFormats": [
+        "barra-arredondada",
+        "massageador",
+        "patinha-m",
+        "patinha-g",
+        "mini-florzinhas",
+        "floral",
+        "coracoezinhos"
+      ],
+      "images": {
+        "desktopHero": "/assets/fragrances/frutas-vermelhas/desktopHero.webp",
+        "mobileHero": "/assets/fragrances/frutas-vermelhas/mobileHero.webp",
+        "desktopBackground": "/assets/fragrances/frutas-vermelhas/desktopBackground.webp",
+        "mobileBackground": "/assets/fragrances/frutas-vermelhas/mobileBackground.webp",
+        "avatar": "/assets/fragrances/frutas-vermelhas/avatar.webp",
+        "detail": "/assets/fragrances/frutas-vermelhas/detail.webp"
+      }
+    },
+    {
+      "id": "lavanda-francesa",
+      "name": "Lavanda Francesa",
+      "collection": "mais-aroma",
+      "collectionLabel": "Coleção +Aroma",
+      "description": "Uma experiência floral sofisticada, com nuances aromáticas que convidam ao cuidado e à tranquilidade.",
+      "family": "Floral • Aromática",
+      "aroma": "Lavanda e bergamota, com nuances florais, herbais e amadeiradas.",
+      "feeling": "Calma, serenidade e leveza.",
+      "colors": {
+        "ink": "#fff7ed",
+        "accent": "#f4d5ff",
+        "vignette": "#322035",
+        "ambient": "#6e4a7a"
+      },
+      "availableFormats": [
+        "barra-arredondada",
+        "massageador",
+        "patinha-m",
+        "patinha-g",
+        "mini-florzinhas",
+        "floral",
+        "coracoezinhos"
+      ],
+      "images": {
+        "desktopHero": "/assets/fragrances/lavanda-francesa/desktopHero.webp",
+        "mobileHero": "/assets/fragrances/lavanda-francesa/mobileHero.webp",
+        "desktopBackground": "/assets/fragrances/lavanda-francesa/desktopBackground.webp",
+        "mobileBackground": "/assets/fragrances/lavanda-francesa/mobileBackground.webp",
+        "avatar": "/assets/fragrances/lavanda-francesa/avatar.webp",
+        "detail": "/assets/fragrances/lavanda-francesa/detail.webp"
+      }
+    },
+    {
+      "id": "capim-limao",
+      "name": "Capim-Limão",
+      "collection": "mais-aroma",
+      "collectionLabel": "Coleção +Aroma",
+      "description": "Verde, cítrica e luminosa. Uma fragrância refrescante que evoca natureza e vitalidade.",
+      "family": "Herbal • Cítrica",
+      "aroma": "Capim-limão, laranja e bergamota, com corpo cítrico e fundo suave.",
+      "feeling": "Energia, frescor e renovação.",
+      "colors": {
+        "ink": "#fff8e8",
+        "accent": "#f8ecaa",
+        "vignette": "#223014",
+        "ambient": "#6d772d"
+      },
+      "availableFormats": [
+        "barra-arredondada",
+        "massageador",
+        "patinha-m",
+        "patinha-g",
+        "mini-florzinhas",
+        "floral",
+        "coracoezinhos"
+      ],
+      "images": {
+        "desktopHero": "/assets/fragrances/capim-limao/desktopHero.webp",
+        "avatar": "/assets/fragrances/capim-limao/avatar.webp",
+        "detail": "/assets/fragrances/capim-limao/detail.webp",
+        "mobileHero": "/assets/fragrances/capim-limao/mobileHero.webp",
+        "desktopBackground": "/assets/fragrances/capim-limao/desktopBackground.webp",
+        "mobileBackground": "/assets/fragrances/capim-limao/mobileBackground.webp"
+      }
+    }
+  ]
+}
