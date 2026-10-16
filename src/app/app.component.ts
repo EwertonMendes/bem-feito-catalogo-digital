@@ -36,6 +36,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
   private readonly root = viewChild<ElementRef<HTMLElement>>('stage');
   private readonly formatViewport = viewChild<ElementRef<HTMLElement>>('formatViewport');
+  private readonly formatCaption = viewChild<ElementRef<HTMLElement>>('formatCaption');
   private formatTouchStart: { x: number; y: number } | null = null;
   private formatDrag: {
     pointerId: number;
@@ -49,6 +50,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private dragFrame: number | null = null;
   private dragTarget = 0;
   private dragMomentum?: gsap.core.Tween;
+  private captionTransition?: gsap.core.Timeline;
+  private captionTargetId: string | null = null;
   private lastDragEnd = -Infinity;
   private readonly prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   private readonly wheelPause = 760;
@@ -71,7 +74,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly error = signal(false);
   readonly selectedFormatId = signal('barra-arredondada');
   readonly previewFormatId = signal<string | null>(null);
-  readonly formatCaptionX = signal(0);
+  readonly captionFormat = signal<ProductFormat | null>(null);
   readonly transitioning = signal(false);
   readonly formatHasOverflow = signal(false);
   readonly formatCanScrollLeft = signal(false);
@@ -82,6 +85,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly active = computed(() => this.fragrances()[this.activeIndex()] ?? null);
   readonly selectedFormat = computed(() => this.formats().find((f) => f.id === this.selectedFormatId()) ?? null);
   readonly previewedFormat = computed(() => this.formats().find((f) => f.id === this.previewFormatId()) ?? null);
+  readonly focusedFormat = computed(() => this.previewedFormat() ?? this.selectedFormat());
+  private readonly captionEffect = effect(() => {
+    const next = this.focusedFormat();
+    const caption = this.formatCaption()?.nativeElement;
+    if (next && caption && next.id !== this.captionTargetId) this.animateFormatCaption(next, caption);
+  });
   readonly selectedPrice = computed(() => {
     const fragrance = this.active();
     const format = this.selectedFormat();
@@ -172,6 +181,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transition?.kill();
     this.cancelFormatFrame();
     this.dragMomentum?.kill();
+    this.captionTransition?.kill();
     this.formatDrag = null;
     gsap.killTweensOf('.scene-backdrop, .scene-product, .scene-title, .scene-copy, .scene-button, .ambient-layer');
   }
@@ -236,20 +246,55 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     requestAnimationFrame(() => this.revealSelectedFormat());
   }
 
-  /** Floating caption lives outside the scroll viewport, avoiding clipped tooltips. */
+  /**
+   * Animate a single, centered editorial caption. The Angular signal owns its
+   * content; GSAP only animates presentation and never calculates layout.
+   * A new hover cancels the previous timeline, so no stale caption can win.
+   */
+  private animateFormatCaption(format: ProductFormat, caption: HTMLElement): void {
+    this.captionTargetId = format.id;
+    this.captionTransition?.kill();
+    this.captionTransition = undefined;
+
+    const pieces = caption.querySelectorAll<HTMLElement>(
+      '.format-editorial-eyebrow, .format-editorial-name, .format-editorial-detail'
+    );
+
+    if (!this.captionFormat() || this.prefersReduced.matches) {
+      this.captionFormat.set(format);
+      gsap.set(pieces, { clearProps: 'opacity,transform,visibility' });
+      return;
+    }
+
+    this.captionTransition = gsap.timeline({
+      onComplete: () => { this.captionTransition = undefined; }
+    })
+      .to(pieces, {
+        opacity: 0, y: -5, duration: .13, stagger: .018, ease: 'power1.in'
+      })
+      .call(() => {
+        this.zone.run(() => {
+          this.captionFormat.set(format);
+          this.cdr.detectChanges();
+        });
+      })
+      .set(pieces, { opacity: 0, y: 8 })
+      .set(caption.querySelectorAll<HTMLElement>('.format-editorial-rule'), { scaleX: 0 })
+      .to(pieces, {
+        opacity: 1, y: 0, duration: .37, stagger: .055, ease: 'power2.out'
+      })
+      .to(caption.querySelectorAll<HTMLElement>('.format-editorial-rule'), {
+        scaleX: 1, duration: .38, ease: 'power2.out'
+      }, '<.13');
+  }
+
+  /** Preview only for hover-capable pointers and keyboard focus. */
   previewFormat(format: ProductFormat, event: Event): void {
     if (this.formatDrag?.dragging || this.transitioning()) return;
     const target = event.currentTarget;
     if (!(target instanceof HTMLElement)) return;
     if (event.type === 'mouseenter' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     if (event.type === 'focus' && !target.matches(':focus-visible')) return;
-    const carousel = target.closest<HTMLElement>('.format-carousel');
-    if (!carousel) return;
-    const slot = target.getBoundingClientRect();
-    const bounds = carousel.getBoundingClientRect();
-    const half = Math.min(110, bounds.width / 2);
-    const center = slot.left + slot.width / 2 - bounds.left;
-    this.formatCaptionX.set(Math.max(half, Math.min(bounds.width - half, center)));
     this.previewFormatId.set(format.id);
   }
 
