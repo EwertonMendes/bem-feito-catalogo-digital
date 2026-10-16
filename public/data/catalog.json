@@ -211,6 +211,15 @@
         "mobileHero": "assets/fragrances/capim-limao/mobileHero.webp",
         "desktopBackground": "assets/fragrances/capim-limao/desktopBackground.webp",
         "mobileBackground": "assets/fragrances/capim-limao/mobileBackground.webp"
+      },
+      "medallionImages": {
+        "coracoezinhos": "assets/format-medallions/capim-limao/coracoezinhos.webp",
+        "mini-florzinhas": "assets/format-medallions/capim-limao/mini-florzinhas.webp",
+        "patinha-m": "assets/format-medallions/capim-limao/patinha-m.webp",
+        "patinha-g": "assets/format-medallions/capim-limao/patinha-g.webp",
+        "barra-arredondada": "assets/format-medallions/capim-limao/barra-arredondada.webp",
+        "floral": "assets/format-medallions/capim-limao/floral.webp",
+        "massageador": "assets/format-medallions/capim-limao/massageador.webp"
       }
     }
   ]
