@@ -7,6 +7,7 @@ import {
   ElementRef,
   OnDestroy,
   OnInit,
+  NgZone,
   computed,
   effect,
   inject,
@@ -30,12 +31,24 @@ import { CatalogService } from './services/catalog.service';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly catalogService = inject(CatalogService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly zone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
   private readonly root = viewChild<ElementRef<HTMLElement>>('stage');
   private readonly formatViewport = viewChild<ElementRef<HTMLElement>>('formatViewport');
   private formatTouchStart: { x: number; y: number } | null = null;
-  private formatDrag: { pointerId: number; startX: number; startScrollLeft: number; dragging: boolean } | null = null;
-  private preventFormatClick = false;
+  private formatDrag: {
+    pointerId: number;
+    startX: number;
+    startScrollLeft: number;
+    lastX: number;
+    lastTime: number;
+    velocity: number;
+    dragging: boolean;
+  } | null = null;
+  private dragFrame: number | null = null;
+  private dragTarget = 0;
+  private dragMomentum?: gsap.core.Tween;
+  private lastDragEnd = -Infinity;
   private readonly prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   private readonly wheelPause = 760;
   private wheelTimestamp = 0;
@@ -57,7 +70,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly error = signal(false);
   readonly selectedFormatId = signal('barra-arredondada');
   readonly transitioning = signal(false);
-  readonly formatDragging = signal(false);
   readonly formatHasOverflow = signal(false);
   readonly formatCanScrollLeft = signal(false);
   readonly formatCanScrollRight = signal(false);
@@ -78,13 +90,40 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.formats().filter(format => this.active()?.availableFormats.includes(format.id))
   );
   private readonly formatOverflowEffect = effect((onCleanup) => {
-    const element = this.formatViewport()?.nativeElement;
-    if (!element) return;
-    const observer = new ResizeObserver(() => this.refreshFormatArrows(element));
-    observer.observe(element);
-    for (const child of Array.from(element.children)) observer.observe(child);
-    queueMicrotask(() => this.refreshFormatArrows(element));
-    onCleanup(() => observer.disconnect());
+    const viewport = this.formatViewport()?.nativeElement;
+    if (!viewport) return;
+
+    // Drag listeners run outside Angular's change detection: one visual update
+    // per animation frame, even when the mouse sends hundreds of events.
+    const pointerDown = (event: PointerEvent) => this.onFormatPointerDown(event, viewport);
+    const pointerMove = (event: PointerEvent) => this.onFormatPointerMove(event, viewport);
+    const pointerUp = (event: PointerEvent) => this.onFormatPointerEnd(event, viewport);
+    const pointerCancel = (event: PointerEvent) => this.onFormatPointerEnd(event, viewport, true);
+    const pointerLeave = (event: PointerEvent) => this.onFormatPointerLeave(event);
+    this.zone.runOutsideAngular(() => {
+      viewport.addEventListener('pointerdown', pointerDown);
+      viewport.addEventListener('pointermove', pointerMove);
+      viewport.addEventListener('pointerup', pointerUp);
+      viewport.addEventListener('pointercancel', pointerCancel);
+      viewport.addEventListener('pointerleave', pointerLeave);
+    });
+
+    const observer = new ResizeObserver(() => this.zone.run(() => this.refreshFormatArrows(viewport)));
+    observer.observe(viewport);
+    for (const child of Array.from(viewport.children)) observer.observe(child);
+    queueMicrotask(() => this.zone.run(() => this.refreshFormatArrows(viewport)));
+    onCleanup(() => {
+      observer.disconnect();
+      viewport.removeEventListener('pointerdown', pointerDown);
+      viewport.removeEventListener('pointermove', pointerMove);
+      viewport.removeEventListener('pointerup', pointerUp);
+      viewport.removeEventListener('pointercancel', pointerCancel);
+      viewport.removeEventListener('pointerleave', pointerLeave);
+      viewport.classList.remove('is-dragging');
+      this.cancelFormatFrame();
+      this.dragMomentum?.kill();
+      this.formatDrag = null;
+    });
   });
 
   ngOnInit(): void {
@@ -124,6 +163,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     window.removeEventListener('touchend', this.touchEnd);
     window.removeEventListener('pointermove', this.pointerMove);
     this.transition?.kill();
+    this.cancelFormatFrame();
+    this.dragMomentum?.kill();
     this.formatDrag = null;
     gsap.killTweensOf('.scene-backdrop, .scene-product, .scene-title, .scene-copy, .scene-button, .ambient-layer');
   }
@@ -198,76 +239,125 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   scrollFormats(direction: -1 | 1): void {
-    const element = this.formatViewport()?.nativeElement;
-    if (!element) return;
-    const first = element.querySelector<HTMLElement>('.format-option');
-    const step = (first?.offsetWidth ?? 160) + 10;
-    const count = Math.max(1, Math.floor(element.clientWidth / step) - 1);
-    element.scrollBy({ left: direction * step * count, behavior: this.prefersReduced.matches ? 'instant' : 'smooth' });
-  }
-
-  refreshFormatArrows(element = this.formatViewport()?.nativeElement): void {
-    if (!element) return;
-    const remaining = element.scrollWidth - element.clientWidth;
-    this.formatHasOverflow.set(remaining > 3);
-    this.formatCanScrollLeft.set(remaining > 3 && element.scrollLeft > 3);
-    this.formatCanScrollRight.set(remaining > 3 && element.scrollLeft < remaining - 3);
-  }
-
-  onFormatPointerDown(event: PointerEvent): void {
-    // Touch stays managed by the existing gesture handler; only mouse drags
-    // initiate manual scrolling here, preserving ordinary button clicks.
-    if (event.pointerType !== 'mouse' || event.button !== 0 || this.transitioning() ||
-        this.isMenuOpen() || this.isInfoOpen()) return;
     const viewport = this.formatViewport()?.nativeElement;
-    if (!viewport || viewport.scrollWidth <= viewport.clientWidth + 3) return;
+    if (!viewport) return;
+    this.dragMomentum?.kill();
+    const first = viewport.querySelector<HTMLElement>('.format-option');
+    const gap = Number.parseFloat(getComputedStyle(viewport).columnGap) || 0;
+    const itemSize = (first?.offsetWidth ?? 170) + gap;
+    const count = Math.max(1, Math.floor(viewport.clientWidth / itemSize) - 1);
+    const max = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    const target = Math.max(0, Math.min(max, viewport.scrollLeft + direction * itemSize * count));
+    viewport.scrollTo({ left: target, behavior: this.prefersReduced.matches ? 'instant' : 'smooth' });
+  }
+
+  refreshFormatArrows(viewport = this.formatViewport()?.nativeElement): void {
+    if (!viewport) return;
+    const max = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    const position = Math.min(max, Math.max(0, viewport.scrollLeft));
+    // Browser scroll offsets can be fractional; tolerate a few pixels near edges.
+    const edge = Math.min(12, Math.max(4, viewport.clientWidth * 0.015));
+    this.formatHasOverflow.set(max > edge);
+    this.formatCanScrollLeft.set(max > edge && position > edge);
+    this.formatCanScrollRight.set(max > edge && max - position > edge);
+  }
+
+  private cancelFormatFrame(): void {
+    if (this.dragFrame !== null) {
+      cancelAnimationFrame(this.dragFrame);
+      this.dragFrame = null;
+    }
+  }
+
+  private onFormatPointerDown(event: PointerEvent, viewport: HTMLElement): void {
+    if (event.pointerType !== 'mouse' || event.button !== 0 || this.transitioning() ||
+      this.isMenuOpen() || this.isInfoOpen() || this.currentSection() !== 'fragrances') return;
+    if (viewport.scrollWidth - viewport.clientWidth <= 4) return;
+    this.dragMomentum?.kill();
+    this.cancelFormatFrame();
     this.formatDrag = {
       pointerId: event.pointerId,
       startX: event.clientX,
       startScrollLeft: viewport.scrollLeft,
+      lastX: event.clientX,
+      lastTime: event.timeStamp,
+      velocity: 0,
       dragging: false
     };
+    this.dragTarget = viewport.scrollLeft;
   }
 
-  onFormatPointerMove(event: PointerEvent): void {
-    const state = this.formatDrag;
-    const viewport = this.formatViewport()?.nativeElement;
-    if (!state || !viewport || state.pointerId !== event.pointerId) return;
-    const moved = event.clientX - state.startX;
-    if (!state.dragging && Math.abs(moved) > 6) {
-      state.dragging = true;
-      this.formatDragging.set(true);
+  private onFormatPointerMove(event: PointerEvent, viewport: HTMLElement): void {
+    const drag = this.formatDrag;
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    const displacement = event.clientX - drag.startX;
+    if (!drag.dragging) {
+      if (Math.abs(displacement) <= 6) return; // keep normal button clicks intact
+      drag.dragging = true;
+      viewport.classList.add('is-dragging'); // synchronous; prevents CSS snap conflicts
       viewport.setPointerCapture(event.pointerId);
     }
-    if (state.dragging) {
-      event.preventDefault();
-      viewport.scrollLeft = state.startScrollLeft - moved;
-      this.refreshFormatArrows(viewport);
+    event.preventDefault();
+    const dt = Math.max(1, event.timeStamp - drag.lastTime);
+    const instantVelocity = (event.clientX - drag.lastX) / dt;
+    drag.velocity = .55 * drag.velocity + .45 * instantVelocity;
+    drag.lastX = event.clientX;
+    drag.lastTime = event.timeStamp;
+    const max = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    this.dragTarget = Math.max(0, Math.min(max, drag.startScrollLeft - displacement));
+
+    if (this.dragFrame === null) {
+      this.dragFrame = requestAnimationFrame(() => {
+        this.dragFrame = null;
+        viewport.scrollLeft = this.dragTarget;
+      });
     }
   }
 
-  onFormatPointerEnd(event: PointerEvent): void {
-    const state = this.formatDrag;
-    if (!state || state.pointerId !== event.pointerId) return;
+  private onFormatPointerEnd(event: PointerEvent, viewport: HTMLElement, cancelled = false): void {
+    const drag = this.formatDrag;
+    if (!drag || event.pointerId !== drag.pointerId) return;
     this.formatDrag = null;
-    if (!state.dragging) return;
-    this.formatDragging.set(false);
-    this.preventFormatClick = true;
-    const viewport = this.formatViewport()?.nativeElement;
-    if (viewport?.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
-    // A click resulting from pointerup is dispatched before the next frame.
-    // Block only that click, then restore regular selection.
-    requestAnimationFrame(() => this.preventFormatClick = false);
+    this.cancelFormatFrame();
+    if (!drag.dragging) return;
+    viewport.scrollLeft = this.dragTarget;
+    viewport.classList.remove('is-dragging');
+    if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
+    this.lastDragEnd = performance.now();
+
+    const max = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    // Keep the gallery exactly at its boundaries, avoiding a phantom previous arrow.
+    if (viewport.scrollLeft < 12) viewport.scrollLeft = 0;
+    if (max - viewport.scrollLeft < 12) viewport.scrollLeft = max;
+
+    const recent = event.timeStamp - drag.lastTime < 90;
+    if (!cancelled && recent && !this.prefersReduced.matches && Math.abs(drag.velocity) > .08) {
+      const target = Math.max(0, Math.min(max, viewport.scrollLeft - drag.velocity * 135));
+      this.dragMomentum = gsap.to(viewport, {
+        scrollLeft: target,
+        duration: .36,
+        ease: 'power2.out',
+        overwrite: true,
+        onComplete: () => {
+          if (viewport.scrollLeft < 12) viewport.scrollLeft = 0;
+          if (max - viewport.scrollLeft < 12) viewport.scrollLeft = max;
+          this.zone.run(() => this.refreshFormatArrows(viewport));
+        }
+      });
+    } else {
+      this.zone.run(() => this.refreshFormatArrows(viewport));
+    }
   }
 
-  onFormatPointerLeave(event: PointerEvent): void {
+  private onFormatPointerLeave(event: PointerEvent): void {
     if (this.formatDrag?.pointerId === event.pointerId && !this.formatDrag.dragging) {
       this.formatDrag = null;
     }
   }
 
   onFormatClick(event: MouseEvent, format: ProductFormat): void {
-    if (this.preventFormatClick) {
+    // A release after dragging may synthesize a click on an image card.
+    if (event.detail > 0 && performance.now() - this.lastDragEnd < 160) {
       event.preventDefault();
       event.stopPropagation();
       return;

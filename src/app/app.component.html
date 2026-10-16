@@ -71,13 +71,7 @@
         </button>
 
         <div #formatViewport class="format-viewport"
-          [class.is-dragging]="formatDragging()"
           (scroll)="refreshFormatArrows()"
-          (pointerdown)="onFormatPointerDown($event)"
-          (pointermove)="onFormatPointerMove($event)"
-          (pointerup)="onFormatPointerEnd($event)"
-          (pointercancel)="onFormatPointerEnd($event)"
-          (pointerleave)="onFormatPointerLeave($event)"
           (touchstart)="onFormatTouchStart($event)"
           (touchend)="onFormatTouchEnd($event)">
           @for (format of formats(); track format.id) {

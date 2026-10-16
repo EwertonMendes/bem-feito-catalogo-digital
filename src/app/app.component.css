@@ -111,7 +111,7 @@
   overflow-x: auto;
   overflow-y: hidden;
   padding: 8px 5px 10px;
-  scroll-snap-type: x proximity;
+  scroll-snap-type: none;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
@@ -119,8 +119,7 @@
   user-select: none;
   -webkit-user-select: none;
   cursor: grab;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 1.5%, black 98.5%, transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0%, black 1.5%, black 98.5%, transparent 100%);
+  /* No edge mask: the first and last cards must stay fully visible. */
 }
 .format-viewport::-webkit-scrollbar { display: none; }
 .format-viewport.is-dragging { scroll-snap-type: none; cursor: grabbing; }
@@ -349,7 +348,7 @@
     width: calc(100% - 28px);
     bottom: max(90px, env(safe-area-inset-bottom, 0px) + 80px);
   }
-  .format-viewport { gap: 9px; padding: 5px 3px 7px; touch-action: pan-x; }
+  .format-viewport { gap: 9px; padding: 5px 3px 7px; touch-action: pan-x; scroll-snap-type: x proximity; }
   .format-option { flex-basis: clamp(135px, 44vw, 175px); border-radius: 9px; }
   .format-arrow { display: none; }
   .mobile-swipe-hint { bottom: max(20px,env(safe-area-inset-bottom, 0px) + 10px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; flex-direction: column; gap: 8px; width: 220px; color: #fff; font-size: 9px; line-height: 1.5; text-align: center; letter-spacing: .19em; text-shadow: 0 2px 7px rgba(0,0,0,.58); }
@@ -402,4 +401,11 @@
   .mobile-swipe-hint { bottom: max(25px, 3dvh); width: 300px; font-size: 13px; gap: 14px; }
   .hint-up { width: 37px; height: 37px; line-height: 43px; font-size: 32px; }
   .mobile-serial { bottom: 5dvh; right: 4vw; font-size: 16px; }
+}
+
+/* A mouse-driven viewport never competes with native CSS snap during drag. */
+@media (hover: hover) and (pointer: fine) {
+  .format-viewport { scroll-snap-type: none; }
+  .format-option:not(:disabled) { cursor: grab; }
+  .format-viewport.is-dragging .format-option { cursor: grabbing; }
 }
