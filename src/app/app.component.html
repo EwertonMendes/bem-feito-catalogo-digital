@@ -60,43 +60,52 @@
         <span class="rail-scroll-note"><span class="mini-mouse" aria-hidden="true"></span>ROLE PARA EXPLORAR</span>
       </div>
 
-      <!-- Independent format axis. Pricing stays in the fragrance details panel. -->
+      <!-- A quiet second axis: vector soap silhouettes; flavour palette comes from the stage. -->
       <nav class="format-carousel" aria-label="Escolher formato do sabonete">
+        <div class="format-caption" #formatCaption
+          [class.is-visible]="previewedFormat() !== null"
+          [style.left.px]="formatCaptionX()"
+          aria-hidden="true">
+          @if (previewedFormat(); as preview) {
+            <strong>{{ preview.name }}</strong>
+            <small>{{ preview.weight }}</small>
+          }
+        </div>
+        <div class="format-touch-caption" aria-hidden="true">
+          <span>{{ selectedFormat()?.name }}</span>
+          <small>{{ selectedFormat()?.weight }}</small>
+        </div>
         <button type="button" class="format-arrow format-arrow-prev"
           aria-label="Mostrar formatos anteriores"
           [hidden]="!formatCanScrollLeft()"
           (click)="scrollFormats(-1)">
           <svg viewBox="0 0 24 24" aria-hidden="true" fill="none"><path d="m14 5-7 7 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-
         <div #formatViewport class="format-viewport"
           (scroll)="refreshFormatArrows()"
           (touchstart)="onFormatTouchStart($event)"
           (touchend)="onFormatTouchEnd($event)">
-          @for (format of formats(); track format.id) {
-            <button type="button" class="format-option"
-              [attr.data-format-id]="format.id"
-              [class.is-selected]="selectedFormatId() === format.id"
-              [disabled]="!fragrance.availableFormats.includes(format.id)"
-              [attr.aria-pressed]="selectedFormatId() === format.id"
-              [attr.aria-label]="format.name + ', ' + format.weight"
-              (click)="onFormatClick($event, format)">
-              <span class="format-image-slot" aria-hidden="true">
-                @if (fragrance.formatImages?.[format.id]; as art) {
-                  <img class="format-image"
-                    [src]="art.small"
-                    [attr.srcset]="art.small + ' 640w, ' + art.large + ' 1200w'"
-                    sizes="(max-width: 720px) 175px, 226px"
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    draggable="false">
-                }
-              </span>
-            </button>
-          }
+          <div class="format-track">
+            @for (format of formats(); track format.id) {
+              <button type="button" class="format-option"
+                [attr.data-format-id]="format.id"
+                [class.is-selected]="selectedFormatId() === format.id"
+                [disabled]="!fragrance.availableFormats.includes(format.id)"
+                [attr.aria-pressed]="selectedFormatId() === format.id"
+                [attr.aria-label]="format.name + ', ' + format.weight"
+                (mouseenter)="previewFormat(format, $event)"
+                (mouseleave)="clearFormatPreview(format)"
+                (focus)="previewFormat(format, $event)"
+                (blur)="clearFormatPreview(format)"
+                (click)="onFormatClick($event, format)">
+                <bf-format-medallion
+                  [format]="format"
+                  [selected]="selectedFormatId() === format.id"
+                  [expanded]="previewFormatId() === format.id" />
+              </button>
+            }
+          </div>
         </div>
-
         <button type="button" class="format-arrow format-arrow-next"
           aria-label="Mostrar próximos formatos"
           [hidden]="!formatCanScrollRight()"

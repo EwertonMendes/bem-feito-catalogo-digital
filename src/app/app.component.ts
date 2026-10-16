@@ -19,11 +19,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import gsap from 'gsap';
 import { Catalog, Fragrance, ProductFormat, VisualSection } from './models/catalog';
 import { CatalogService } from './services/catalog.service';
+import { FormatMedallionComponent } from './components/format-medallion/format-medallion.component';
 
 @Component({
   selector: 'bf-root',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormatMedallionComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -69,6 +70,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly loading = signal(true);
   readonly error = signal(false);
   readonly selectedFormatId = signal('barra-arredondada');
+  readonly previewFormatId = signal<string | null>(null);
+  readonly formatCaptionX = signal(0);
   readonly transitioning = signal(false);
   readonly formatHasOverflow = signal(false);
   readonly formatCanScrollLeft = signal(false);
@@ -78,6 +81,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly formats = computed(() => this.catalog()?.formats ?? []);
   readonly active = computed(() => this.fragrances()[this.activeIndex()] ?? null);
   readonly selectedFormat = computed(() => this.formats().find((f) => f.id === this.selectedFormatId()) ?? null);
+  readonly previewedFormat = computed(() => this.formats().find((f) => f.id === this.previewFormatId()) ?? null);
   readonly selectedPrice = computed(() => {
     const fragrance = this.active();
     const format = this.selectedFormat();
@@ -138,6 +142,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedFormatId.set(catalog.config.defaultFormat);
         this.loading.set(false);
         this.preloadAssets();
+        // The default format may be in the middle of a narrow touch carousel.
+        // Show its medallion immediately rather than leaving the selection off-screen.
+        requestAnimationFrame(() => this.revealSelectedFormat(true));
         if (!this.prefersReduced.matches) requestAnimationFrame(() => this.animateInitial());
       },
       error: (reason: unknown) => {
@@ -229,6 +236,27 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     requestAnimationFrame(() => this.revealSelectedFormat());
   }
 
+  /** Floating caption lives outside the scroll viewport, avoiding clipped tooltips. */
+  previewFormat(format: ProductFormat, event: Event): void {
+    if (this.formatDrag?.dragging || this.transitioning()) return;
+    const target = event.currentTarget;
+    if (!(target instanceof HTMLElement)) return;
+    if (event.type === 'mouseenter' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    if (event.type === 'focus' && !target.matches(':focus-visible')) return;
+    const carousel = target.closest<HTMLElement>('.format-carousel');
+    if (!carousel) return;
+    const slot = target.getBoundingClientRect();
+    const bounds = carousel.getBoundingClientRect();
+    const half = Math.min(110, bounds.width / 2);
+    const center = slot.left + slot.width / 2 - bounds.left;
+    this.formatCaptionX.set(Math.max(half, Math.min(bounds.width - half, center)));
+    this.previewFormatId.set(format.id);
+  }
+
+  clearFormatPreview(format: ProductFormat): void {
+    if (this.previewFormatId() === format.id) this.previewFormatId.set(null);
+  }
+
   stepFormat(delta: number): void {
     const options = this.availableFormats();
     if (!options.length) return;
@@ -298,6 +326,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!drag.dragging) {
       if (Math.abs(displacement) <= 6) return; // keep normal button clicks intact
       drag.dragging = true;
+      this.zone.run(() => this.previewFormatId.set(null));
       viewport.classList.add('is-dragging'); // synchronous; prevents CSS snap conflicts
       viewport.setPointerCapture(event.pointerId);
     }
@@ -384,7 +413,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy) * 1.35) this.stepFormat(dx < 0 ? 1 : -1);
   }
 
-  private revealSelectedFormat(): void {
+  private revealSelectedFormat(instant = false): void {
     const viewport = this.formatViewport()?.nativeElement;
     if (!viewport) return;
     const selected = Array.from(viewport.querySelectorAll<HTMLElement>('.format-option'))
@@ -394,7 +423,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const card = selected.getBoundingClientRect();
     const offset = card.left < view.left + 4 ? card.left - view.left - 6
       : card.right > view.right - 4 ? card.right - view.right + 6 : 0;
-    if (offset) viewport.scrollBy({ left: offset, behavior: this.prefersReduced.matches ? 'instant' : 'smooth' });
+    if (offset) viewport.scrollBy({ left: offset, behavior: instant || this.prefersReduced.matches ? 'instant' : 'smooth' });
   }
 
   toggleMenu(): void {

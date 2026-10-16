@@ -1,0 +1,32 @@
+:host {
+  display: grid; place-items: center; width: 100%; height: 100%; pointer-events: none;
+  --soap-highlight: color-mix(in srgb, var(--accent) 50%, #fff4dd);
+  --soap-face: color-mix(in srgb, var(--accent) 75%, var(--ambient));
+  --soap-shadow: color-mix(in srgb, var(--ambient) 68%, var(--accent));
+  --soap-contour: color-mix(in srgb, var(--ink) 50%, var(--ambient));
+  --soap-gleam: color-mix(in srgb, var(--ink) 82%, var(--accent));
+}
+.format-disc {
+  position: relative; display: grid; place-items: center;
+  width: var(--medallion-size, 82px); height: var(--medallion-size, 82px);
+  border-radius: 50%; border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  background: radial-gradient(circle at 31% 22%,
+    color-mix(in srgb, var(--ink) 14%, transparent),
+    color-mix(in srgb, var(--ambient) 62%, transparent) 58%,
+    color-mix(in srgb, var(--vignette) 69%, transparent) 100%);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.19), 0 6px 22px rgba(0,0,0,.20);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+  will-change: transform;
+}
+.disc-sheen { position: absolute; inset: 4px; border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); border-radius: inherit; }
+bf-format-icon { display: block; width: 78%; height: 78%; }
+.format-disc.is-selected {
+  border-color: color-mix(in srgb, var(--accent) 89%, #fff);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent),
+    0 0 22px color-mix(in srgb, var(--accent) 35%, transparent), 0 7px 22px rgba(0,0,0,.24);
+}
+@media (prefers-reduced-motion: reduce) {
+  .format-disc { transition: none; will-change: auto; }
+}
