@@ -1,34 +1,145 @@
 :host {
-  display: grid; place-items: center; width: 100%; height: 100%; pointer-events: none;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
   --soap-highlight: color-mix(in srgb, var(--accent) 50%, #fff4dd);
   --soap-face: color-mix(in srgb, var(--accent) 75%, var(--ambient));
   --soap-shadow: color-mix(in srgb, var(--ambient) 68%, var(--accent));
   --soap-contour: color-mix(in srgb, var(--ink) 50%, var(--ambient));
   --soap-gleam: color-mix(in srgb, var(--ink) 82%, var(--accent));
 }
+
+/* A floating product, not a glass button: transparent stage with light behind it.
+   All visual effects fit inside the existing carousel hit area. */
 .format-disc {
-  position: relative; display: grid; place-items: center;
-  width: var(--medallion-size, 82px); height: var(--medallion-size, 82px);
-  border-radius: 50%; border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
-  background: radial-gradient(circle at 31% 22%,
-    color-mix(in srgb, var(--ink) 14%, transparent),
-    color-mix(in srgb, var(--ambient) 62%, transparent) 58%,
-    color-mix(in srgb, var(--vignette) 69%, transparent) 100%);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,.19), 0 6px 22px rgba(0,0,0,.20);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: var(--medallion-size, 82px);
+  height: var(--medallion-size, 82px);
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  overflow: visible;
   will-change: transform;
 }
-.disc-sheen { position: absolute; inset: 4px; border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); border-radius: inherit; }
-bf-format-icon { display: block; width: 78%; height: 78%; }
-.soap-photo { display: block; width: 96%; height: 96%; object-fit: contain; object-position: center; user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 3px 3px rgba(20,0,0,.18)); }
-.format-disc:has(.soap-photo) { background: radial-gradient(circle at 34% 24%, color-mix(in srgb, var(--ambient) 65%, #fff), color-mix(in srgb, var(--vignette) 54%, transparent) 75%); }
-.format-disc.is-selected {
-  border-color: color-mix(in srgb, var(--accent) 89%, #fff);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent),
-    0 0 22px color-mix(in srgb, var(--accent) 35%, transparent), 0 7px 22px rgba(0,0,0,.24);
+
+/* Soft ambient light adopts the active fragrance's color palette. */
+.format-disc::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 9%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 48% 43%,
+    color-mix(in srgb, #fff3dd 17%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 12%, transparent) 32%,
+    color-mix(in srgb, var(--ambient) 8%, transparent) 55%,
+    transparent 77%);
+  filter: blur(7px);
+  opacity: .72;
+  transform: scale(1);
+  transition: opacity .32s ease, transform .36s ease;
 }
+
+/* Fine champagne outline only when selected (or being explored). */
+.format-disc::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 5%;
+  border: 1px solid color-mix(in srgb, #f8e6ca 58%, var(--accent));
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(.91);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 13%, transparent);
+  transition: opacity .28s ease, transform .34s ease;
+}
+
+/* A faint grounded shadow: lightest at the sides, without a solid badge. */
+.disc-sheen {
+  position: absolute;
+  z-index: 0;
+  left: 19%;
+  right: 19%;
+  bottom: 12%;
+  height: 12%;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(12, 7, 8, .38);
+  filter: blur(8px);
+  opacity: .57;
+  transform: translateY(3px);
+  transition: opacity .3s ease, transform .34s ease;
+}
+
+/* Transparent WebP product pictures retain an ample safety margin on all sides. */
+.soap-photo {
+  display: block;
+  position: relative;
+  z-index: 1;
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 5px 4px rgba(18, 8, 10, .23))
+          drop-shadow(0 1px 1px rgba(255, 246, 223, .16));
+}
+
+.format-disc[data-format='coracoezinhos'] .soap-photo,
+.format-disc[data-format='mini-florzinhas'] .soap-photo { width: 82%; height: 82%; }
+
+.format-disc[data-format='massageador'] .soap-photo { width: 74%; height: 74%; }
+
+/* Fragrances awaiting their photographed assets use the same light,
+   with a whisper of ivory to keep the line-art silhouettes legible. */
+.format-disc:not(.has-artwork)::before {
+  opacity: .86;
+  background: radial-gradient(circle at 46% 39%,
+    color-mix(in srgb, #fff3db 23%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 15%, transparent) 36%,
+    transparent 77%);
+}
+.format-disc:not(.has-artwork) .disc-sheen { opacity: .22; }
+bf-format-icon {
+  display: block;
+  position: relative;
+  z-index: 1;
+  width: 72%;
+  height: 72%;
+  filter: drop-shadow(0 3px 4px rgba(12, 7, 8, .20));
+}
+
+.format-disc.is-selected::after {
+  opacity: .7;
+  transform: scale(1);
+}
+.format-disc.is-selected::before {
+  opacity: .93;
+  transform: scale(1.08);
+}
+.format-disc.is-selected .disc-sheen { opacity: .64; }
+.format-disc.is-expanded::after {
+  opacity: .9;
+  transform: scale(1.045);
+}
+.format-disc.is-expanded::before {
+  opacity: 1;
+  transform: scale(1.16);
+}
+.format-disc.is-expanded .disc-sheen {
+  opacity: .7;
+  transform: translateY(4px) scaleX(1.04);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .format-disc { transition: none; will-change: auto; }
+  .format-disc { will-change: auto; }
+  .format-disc::before,
+  .format-disc::after,
+  .disc-sheen { transition: none; }
 }
