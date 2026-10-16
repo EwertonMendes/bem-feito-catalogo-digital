@@ -245,7 +245,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!items.length) return;
     const ahead = items[(this.activeIndex() + 1) % items.length];
     const behind = items[(this.activeIndex() + items.length - 1) % items.length];
-    const mobile = window.innerWidth <= 720;
+    const mobile = window.matchMedia('(max-width: 720px), (orientation: portrait) and (max-width: 1200px)').matches;
     for (const item of [ahead, behind]) {
       const path = mobile ? item.images.mobileHero : item.images.desktopHero;
       const image = new Image(); image.src = path;
