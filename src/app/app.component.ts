@@ -8,6 +8,7 @@ import {
   OnDestroy,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
   viewChild,
@@ -31,6 +32,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly root = viewChild<ElementRef<HTMLElement>>('stage');
+  private readonly formatViewport = viewChild<ElementRef<HTMLElement>>('formatViewport');
+  private formatTouchStart: { x: number; y: number } | null = null;
   private readonly prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   private readonly wheelPause = 760;
   private wheelTimestamp = 0;
@@ -52,6 +55,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly error = signal(false);
   readonly selectedFormatId = signal('barra-arredondada');
   readonly transitioning = signal(false);
+  readonly formatHasOverflow = signal(false);
+  readonly formatCanScrollLeft = signal(false);
+  readonly formatCanScrollRight = signal(false);
 
   readonly fragrances = computed(() => this.catalog()?.fragrances ?? []);
   readonly formats = computed(() => this.catalog()?.formats ?? []);
@@ -60,10 +66,23 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly selectedPrice = computed(() => {
     const fragrance = this.active();
     const format = this.selectedFormat();
-    return fragrance && format ? this.number.format(format.prices[fragrance.collection]) : '';
+    return fragrance && format && fragrance.availableFormats.includes(format.id)
+      ? this.number.format(format.prices[fragrance.collection]) : 'Indisponível nesta fragrância';
   });
   readonly currentNumber = computed(() => String(this.activeIndex() + 1).padStart(2, '0'));
   readonly totalNumber = computed(() => String(this.fragrances().length).padStart(2, '0'));
+  readonly availableFormats = computed(() =>
+    this.formats().filter(format => this.active()?.availableFormats.includes(format.id))
+  );
+  private readonly formatOverflowEffect = effect((onCleanup) => {
+    const element = this.formatViewport()?.nativeElement;
+    if (!element) return;
+    const observer = new ResizeObserver(() => this.refreshFormatArrows(element));
+    observer.observe(element);
+    for (const child of Array.from(element.children)) observer.observe(child);
+    queueMicrotask(() => this.refreshFormatArrows(element));
+    onCleanup(() => observer.disconnect());
+  });
 
   ngOnInit(): void {
     this.catalogService.load().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -108,7 +127,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private animateInitial(): void {
     if (!this.active()) return;
     gsap.fromTo('.brand-logo', { y: -12, opacity: 0 }, { y: 0, opacity: 1, duration: .9, ease: 'power2.out' });
-    gsap.fromTo('.thumbnail', { y: 17, opacity: 0 }, { y: 0, opacity: 1, duration: .75, delay: .33, stagger: .1, ease: 'power2.out' });
+    gsap.fromTo('.format-option', { y: 17, opacity: 0 }, { y: 0, opacity: 1, duration: .75, delay: .33, stagger: .07, ease: 'power2.out' });
     gsap.fromTo('.scene-title', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'power3.out' });
     gsap.fromTo('.scene-copy, .scene-button', { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: .85, stagger: .12, delay: .2, ease: 'power2.out' });
     gsap.fromTo('.scene-product', { scale: 1.055, opacity: .5 }, { scale: 1, opacity: 1, duration: 1.5, ease: 'power2.out' });
@@ -120,7 +139,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const target = (index + items.length) % items.length;
     if (target === this.activeIndex()) return;
     this.wheelTimestamp = Date.now();
-    this.selectedFormatId.set('barra-arredondada');
+    // Changing fragrance does not reset the chosen format.
     if (this.prefersReduced.matches) {
       this.activeIndex.set(target);
       this.preloadAssets();
@@ -155,7 +174,69 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   closeDetails(): void { this.isInfoOpen.set(false); }
 
-  setFormat(format: ProductFormat): void { this.selectedFormatId.set(format.id); }
+  setFormat(format: ProductFormat): void {
+    if (!this.active()?.availableFormats.includes(format.id)) return;
+    this.selectedFormatId.set(format.id);
+    requestAnimationFrame(() => this.revealSelectedFormat());
+  }
+
+  stepFormat(delta: number): void {
+    const options = this.availableFormats();
+    if (!options.length) return;
+    const index = Math.max(0, options.findIndex(format => format.id === this.selectedFormatId()));
+    this.setFormat(options[Math.min(options.length - 1, Math.max(0, index + delta))]);
+  }
+
+  formatPrice(format: ProductFormat): string {
+    const fragrance = this.active();
+    return fragrance?.availableFormats.includes(format.id)
+      ? this.formatMoney(format.prices[fragrance.collection]) : 'Indisponível';
+  }
+
+  scrollFormats(direction: -1 | 1): void {
+    const element = this.formatViewport()?.nativeElement;
+    if (!element) return;
+    const first = element.querySelector<HTMLElement>('.format-option');
+    const step = (first?.offsetWidth ?? 160) + 10;
+    const count = Math.max(1, Math.floor(element.clientWidth / step) - 1);
+    element.scrollBy({ left: direction * step * count, behavior: this.prefersReduced.matches ? 'instant' : 'smooth' });
+  }
+
+  refreshFormatArrows(element = this.formatViewport()?.nativeElement): void {
+    if (!element) return;
+    const remaining = element.scrollWidth - element.clientWidth;
+    this.formatHasOverflow.set(remaining > 3);
+    this.formatCanScrollLeft.set(remaining > 3 && element.scrollLeft > 3);
+    this.formatCanScrollRight.set(remaining > 3 && element.scrollLeft < remaining - 3);
+  }
+
+  onFormatTouchStart(event: TouchEvent): void {
+    const touch = event.touches.item(0);
+    if (touch) this.formatTouchStart = { x: touch.clientX, y: touch.clientY };
+  }
+
+  onFormatTouchEnd(event: TouchEvent): void {
+    const start = this.formatTouchStart;
+    this.formatTouchStart = null;
+    const touch = event.changedTouches.item(0);
+    if (!start || !touch || this.isMenuOpen() || this.isInfoOpen() || this.transitioning()) return;
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy) * 1.35) this.stepFormat(dx < 0 ? 1 : -1);
+  }
+
+  private revealSelectedFormat(): void {
+    const viewport = this.formatViewport()?.nativeElement;
+    if (!viewport) return;
+    const selected = Array.from(viewport.querySelectorAll<HTMLElement>('.format-option'))
+      .find(element => element.dataset['formatId'] === this.selectedFormatId());
+    if (!selected) return;
+    const view = viewport.getBoundingClientRect();
+    const card = selected.getBoundingClientRect();
+    const offset = card.left < view.left + 4 ? card.left - view.left - 6
+      : card.right > view.right - 4 ? card.right - view.right + 6 : 0;
+    if (offset) viewport.scrollBy({ left: offset, behavior: this.prefersReduced.matches ? 'instant' : 'smooth' });
+  }
 
   toggleMenu(): void {
     this.isMenuOpen.update((open) => !open);
@@ -207,15 +288,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (this.isInfoOpen() || this.isMenuOpen() || this.currentSection() !== 'fragrances') return;
     if (event.target instanceof HTMLElement && ['BUTTON', 'INPUT', 'TEXTAREA', 'SELECT', 'A'].includes(event.target.tagName)) return;
-    if (['ArrowDown','ArrowRight','PageDown'].includes(event.key)) { event.preventDefault(); this.step(1); }
-    if (['ArrowUp','ArrowLeft','PageUp'].includes(event.key)) { event.preventDefault(); this.step(-1); }
+    if (['ArrowDown','PageDown'].includes(event.key)) { event.preventDefault(); this.step(1); }
+    if (['ArrowUp','PageUp'].includes(event.key)) { event.preventDefault(); this.step(-1); }
+    if (event.key === 'ArrowRight') { event.preventDefault(); this.stepFormat(1); }
+    if (event.key === 'ArrowLeft') { event.preventDefault(); this.stepFormat(-1); }
   }
 
   private onTouchStart(event: TouchEvent): void {
     if (this.isMenuOpen() || this.isInfoOpen() || this.currentSection() !== 'fragrances') return;
     const touch = event.touches.item(0);
     const t = event.target;
-    if (!touch || !(t instanceof Element) || t.closest('button, a, [role="dialog"]')) return;
+    if (!touch || !(t instanceof Element) || t.closest('button, a, [role="dialog"], .format-carousel')) return;
     this.gestureStart = { x: touch.clientX, y: touch.clientY };
   }
 
@@ -228,6 +311,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const dx = touch.clientX - start.x;
     const dy = touch.clientY - start.y;
     if (Math.abs(dy) > 64 && Math.abs(dy) > Math.abs(dx) * 1.2) this.step(dy < 0 ? 1 : -1);
+    else if (Math.abs(dx) > 64 && Math.abs(dx) > Math.abs(dy) * 1.2) this.stepFormat(dx < 0 ? 1 : -1);
   }
 
   private onPointerMove(event: PointerEvent): void {
