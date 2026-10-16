@@ -142,6 +142,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedFormatId.set(catalog.config.defaultFormat);
         this.loading.set(false);
         this.preloadAssets();
+        // The default format may be in the middle of a narrow touch carousel.
+        // Show its medallion immediately rather than leaving the selection off-screen.
+        requestAnimationFrame(() => this.revealSelectedFormat(true));
         if (!this.prefersReduced.matches) requestAnimationFrame(() => this.animateInitial());
       },
       error: (reason: unknown) => {
@@ -410,7 +413,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy) * 1.35) this.stepFormat(dx < 0 ? 1 : -1);
   }
 
-  private revealSelectedFormat(): void {
+  private revealSelectedFormat(instant = false): void {
     const viewport = this.formatViewport()?.nativeElement;
     if (!viewport) return;
     const selected = Array.from(viewport.querySelectorAll<HTMLElement>('.format-option'))
@@ -420,7 +423,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const card = selected.getBoundingClientRect();
     const offset = card.left < view.left + 4 ? card.left - view.left - 6
       : card.right > view.right - 4 ? card.right - view.right + 6 : 0;
-    if (offset) viewport.scrollBy({ left: offset, behavior: this.prefersReduced.matches ? 'instant' : 'smooth' });
+    if (offset) viewport.scrollBy({ left: offset, behavior: instant || this.prefersReduced.matches ? 'instant' : 'smooth' });
   }
 
   toggleMenu(): void {
