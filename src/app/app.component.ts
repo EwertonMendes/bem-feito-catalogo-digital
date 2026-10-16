@@ -279,9 +279,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       })
       .set(pieces, { opacity: 0, y: 8 })
+      .set(caption.querySelectorAll<HTMLElement>('.format-editorial-rule'), { scaleX: 0 })
       .to(pieces, {
         opacity: 1, y: 0, duration: .37, stagger: .055, ease: 'power2.out'
-      });
+      })
+      .to(caption.querySelectorAll<HTMLElement>('.format-editorial-rule'), {
+        scaleX: 1, duration: .38, ease: 'power2.out'
+      }, '<.13');
   }
 
   /** Preview only for hover-capable pointers and keyboard focus. */
