@@ -31,7 +31,31 @@
     linear-gradient(0deg, rgba(12,15,11,.77) 0%, transparent 23%, transparent 81%, rgba(17,16,12,.20) 100%);
   pointer-events: none;
 }
-.scene-shadow { z-index: 3; background: linear-gradient(0deg, rgba(7,8,7,.52),transparent 21%), linear-gradient(90deg,rgba(5,5,5,.05),transparent 82%,rgba(4,8,6,.24)); }
+/* Cinematic edge vignettes sit ABOVE the foreground photography, but BELOW all UI.
+   Each fragrance supplies its own --vignette hue, so shadows remain color-coordinated. */
+.scene-shadow {
+  z-index: 3;
+  background:
+    linear-gradient(90deg,
+      color-mix(in srgb, var(--vignette) 78%, transparent) 0%,
+      color-mix(in srgb, var(--vignette) 65%, transparent) 13%,
+      color-mix(in srgb, var(--vignette) 47%, transparent) 29%,
+      color-mix(in srgb, var(--vignette) 18%, transparent) 43%,
+      transparent 59%),
+    linear-gradient(270deg,
+      color-mix(in srgb, var(--vignette) 68%, transparent) 0%,
+      color-mix(in srgb, var(--vignette) 49%, transparent) 7%,
+      color-mix(in srgb, var(--vignette) 21%, transparent) 15%,
+      transparent 29%),
+    linear-gradient(0deg,
+      color-mix(in srgb, var(--vignette) 82%, transparent) 0%,
+      color-mix(in srgb, var(--vignette) 60%, transparent) 8%,
+      color-mix(in srgb, var(--vignette) 25%, transparent) 22%,
+      transparent 39%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--vignette) 18%, transparent) 0%,
+      transparent 19%);
+}
 .scene-shimmer { z-index: 3; opacity: .17; mix-blend-mode: screen; background: radial-gradient(ellipse at 28% 2%, rgba(255,233,176,.25), transparent 47%); }
 .botanical-foreground { z-index: 2; inset: auto auto -20vh -9vw; width: min(31vw,430px); height: 60vh; opacity: .14; color: var(--ink); filter: blur(.4px); transform: rotate(-12deg); }
 .botanical-foreground img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 12px rgba(255,255,255,.2)); }
@@ -167,7 +191,26 @@
       linear-gradient(180deg, color-mix(in srgb, var(--vignette) 77%, transparent) 0%, color-mix(in srgb, var(--vignette) 70%, transparent) 19%, color-mix(in srgb, var(--vignette) 31%, transparent) 39%, transparent 64%),
       linear-gradient(0deg, rgba(6,9,5,.42), transparent 22%);
   }
-  .scene-shadow { background: linear-gradient(180deg,rgba(3,6,4,.18),transparent 15%,transparent 78%,rgba(3,5,3,.72)); }
+  /* A portrait's content sits at the top: strengthen that zone, leave the
+     soap itself clear in the middle, and shade the swipe hint at the bottom. */
+  .scene-shadow {
+    background:
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--vignette) 77%, transparent) 0%,
+        color-mix(in srgb, var(--vignette) 54%, transparent) 20%,
+        color-mix(in srgb, var(--vignette) 20%, transparent) 39%,
+        transparent 57%),
+      linear-gradient(0deg,
+        color-mix(in srgb, var(--vignette) 79%, transparent) 0%,
+        color-mix(in srgb, var(--vignette) 38%, transparent) 12%,
+        transparent 29%),
+      linear-gradient(90deg,
+        color-mix(in srgb, var(--vignette) 34%, transparent) 0%,
+        transparent 30%),
+      linear-gradient(270deg,
+        color-mix(in srgb, var(--vignette) 31%, transparent) 0%,
+        transparent 26%);
+  }
   .scene-shimmer { opacity: .11; }
   .botanical-foreground { width: 200px; height: 270px; bottom: -80px; left: -95px; opacity: .1; }
   .side-menu,.right-fragrances,.signature,.thumbnail-nav { display: none; }
