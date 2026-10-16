@@ -257,7 +257,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.captionTransition = undefined;
 
     const pieces = caption.querySelectorAll<HTMLElement>(
-      '.format-editorial-eyebrow, .format-editorial-name, .format-editorial-detail'
+      '.format-editorial-name, .format-editorial-detail'
     );
 
     if (!this.captionFormat() || this.prefersReduced.matches) {
