@@ -47,6 +47,9 @@ jobs:
           test -f dist/bem-feito-essencia-viva/browser/index.html
           test -f dist/bem-feito-essencia-viva/browser/data/catalog.json
           test -f dist/bem-feito-essencia-viva/browser/assets/brand/bem-feito-logo.png
+          for formato in coracoezinhos mini-florzinhas patinha-m patinha-g barra-arredondada floral massageador; do
+            test -s "dist/bem-feito-essencia-viva/browser/assets/format-medallions/frutas-vermelhas/${formato}.webp"
+          done
           grep -q 'bem-feito-catalogo-digital/' dist/bem-feito-essencia-viva/browser/index.html
           touch dist/bem-feito-essencia-viva/browser/.nojekyll
 

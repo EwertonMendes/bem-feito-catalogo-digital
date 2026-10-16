@@ -60,7 +60,7 @@
         <span class="rail-scroll-note"><span class="mini-mouse" aria-hidden="true"></span>ROLE PARA EXPLORAR</span>
       </div>
 
-      <!-- A quiet second axis: vector soap silhouettes; flavour palette comes from the stage. -->
+      <!-- Independent format selector: realistic artwork for illustrated fragrances, SVG fallbacks elsewhere. -->
       <nav class="format-carousel" aria-label="Escolher formato do sabonete">
         <div class="format-caption" #formatCaption
           [class.is-visible]="previewedFormat() !== null"
@@ -100,6 +100,7 @@
                 (click)="onFormatClick($event, format)">
                 <bf-format-medallion
                   [format]="format"
+                  [artwork]="fragrance.medallionImages?.[format.id] ?? null"
                   [selected]="selectedFormatId() === format.id"
                   [expanded]="previewFormatId() === format.id" />
               </button>

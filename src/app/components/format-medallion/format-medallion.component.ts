@@ -15,13 +15,19 @@ import { FormatIconComponent } from '../format-icon/format-icon.component';
   template: `
     <span #disc class="format-disc" [class.is-selected]="selected()" aria-hidden="true">
       <span class="disc-sheen"></span>
-      <bf-format-icon [formatId]="format().id" />
+      @if (artwork(); as image) {
+        <img class="soap-photo" [src]="image" alt="" width="160" height="160" draggable="false" decoding="async" />
+      } @else {
+        <bf-format-icon [formatId]="format().id" />
+      }
     </span>
   `,
   styleUrl: './format-medallion.component.css',
 })
 export class FormatMedallionComponent implements AfterViewInit, OnDestroy {
   readonly format = input.required<ProductFormat>();
+  /** An optional image specific to the active fragrance, absent for future fragrances. */
+  readonly artwork = input<string | null>(null);
   readonly selected = input(false);
   readonly expanded = input(false);
   private readonly disc = viewChild<ElementRef<HTMLElement>>('disc');

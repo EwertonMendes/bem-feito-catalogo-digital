@@ -28,6 +28,8 @@ export interface Fragrance {
   availableFormats: string[];
   /** Artwork per format for this specific fragrance; missing entries remain unillustrated. */
   formatImages?: Record<string, FormatImageSources>;
+  /** Transparent medallion artwork, keyed by format and available per fragrance. */
+  medallionImages?: Record<string, string>;
   images: FragranceAssets;
 }
 

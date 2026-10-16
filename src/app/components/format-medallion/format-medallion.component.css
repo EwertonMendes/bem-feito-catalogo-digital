@@ -22,6 +22,8 @@
 }
 .disc-sheen { position: absolute; inset: 4px; border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); border-radius: inherit; }
 bf-format-icon { display: block; width: 78%; height: 78%; }
+.soap-photo { display: block; width: 96%; height: 96%; object-fit: contain; object-position: center; user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 3px 3px rgba(20,0,0,.18)); }
+.format-disc:has(.soap-photo) { background: radial-gradient(circle at 34% 24%, color-mix(in srgb, var(--ambient) 65%, #fff), color-mix(in srgb, var(--vignette) 54%, transparent) 75%); }
 .format-disc.is-selected {
   border-color: color-mix(in srgb, var(--accent) 89%, #fff);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent),
