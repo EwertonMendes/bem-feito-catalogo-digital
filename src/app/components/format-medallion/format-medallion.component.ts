@@ -13,7 +13,7 @@ import { FormatIconComponent } from '../format-icon/format-icon.component';
   imports: [FormatIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <span #disc class="format-disc" [class.is-selected]="selected()" aria-hidden="true">
+    <span #disc class="format-disc" [class.has-artwork]="!!artwork()" [class.is-selected]="selected()" [class.is-expanded]="expanded()" [attr.data-format]="format().id" aria-hidden="true">
       <span class="disc-sheen"></span>
       @if (artwork(); as image) {
         <img class="soap-photo" [src]="image" alt="" width="160" height="160" draggable="false" decoding="async" />
@@ -48,7 +48,7 @@ export class FormatMedallionComponent implements AfterViewInit, OnDestroy {
     const disc = this.disc()?.nativeElement;
     if (!disc || this.reducedMotion.matches) return;
     this.animation = gsap.timeline({ paused: true }).to(disc, {
-      scale: 1.09, y: -3, duration: .26, ease: 'power2.out', transformOrigin: 'center center',
+      scale: 1.075, y: -2, duration: .34, ease: 'power2.out', transformOrigin: 'center center',
     });
     if (this.expanded()) this.animation.progress(1);
   }
