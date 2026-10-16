@@ -61,39 +61,76 @@
         <span class="rail-scroll-note"><span class="mini-mouse" aria-hidden="true"></span>ROLE PARA EXPLORAR</span>
       </div>
 
-      <!-- One fragrance + one format: these selections remain independent. -->
-      <section class="format-carousel" aria-label="Escolher formato do sabonete">
-        <div class="format-heading">
-          <span>FORMATOS DE SABONETE</span>
-          <span class="format-current" aria-live="polite">{{ selectedFormat()?.name }} <span aria-hidden="true">·</span> {{ selectedPrice() }}</span>
-        </div>
+      <!-- Independent format axis. Pricing stays in the fragrance details panel. -->
+      <nav class="format-carousel" aria-label="Escolher formato do sabonete">
         <button type="button" class="format-arrow format-arrow-prev"
-          aria-label="Ver formatos anteriores"
-          [hidden]="!formatHasOverflow() || !formatCanScrollLeft()"
-          (click)="scrollFormats(-1)"><span aria-hidden="true">←</span></button>
+          aria-label="Mostrar formatos anteriores"
+          [hidden]="!formatCanScrollLeft()"
+          (click)="scrollFormats(-1)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none"><path d="m14 5-7 7 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
         <div #formatViewport class="format-viewport"
           (scroll)="refreshFormatArrows()"
           (touchstart)="onFormatTouchStart($event)"
           (touchend)="onFormatTouchEnd($event)">
-          @for (format of formats(); track format.id; let i = $index) {
+          @for (format of formats(); track format.id) {
             <button type="button" class="format-option"
               [attr.data-format-id]="format.id"
               [class.is-selected]="selectedFormatId() === format.id"
               [disabled]="!fragrance.availableFormats.includes(format.id)"
               [attr.aria-pressed]="selectedFormatId() === format.id"
-              [attr.aria-label]="format.name + ', ' + format.weight + ', ' + formatPrice(format)"
+              [attr.aria-label]="format.name + ', ' + format.weight"
               (click)="setFormat(format)">
-              <span class="format-name">{{ format.name }}</span>
-              <span class="format-meta">{{ format.weight }} <span aria-hidden="true">·</span> {{ formatPrice(format) }}</span>
-              <span class="format-index">{{ (i + 1).toString().padStart(2, '0') }}</span>
+              <span class="format-ornament" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+                  @switch (format.id) {
+                    @case ('barra-arredondada') {
+                      <ellipse cx="24" cy="24" rx="17" ry="11"/><path d="M10 23c6-8 22-8 28 0M14 30c5 4 15 5 21 1"/>
+                    }
+                    @case ('massageador') {
+                      <ellipse cx="24" cy="25" rx="17" ry="12"/><circle cx="18" cy="21" r="3"/><circle cx="28" cy="21" r="3"/><circle cx="23" cy="29" r="3"/><circle cx="35" cy="28" r="2"/><circle cx="12" cy="27" r="2"/>
+                    }
+                    @case ('patinha-m') {
+                      <path d="M17 26c-4 2-7 8-4 11 4 4 8-1 12-1s7 5 11 1c3-3-1-9-5-11-4-3-10-3-14 0Z"/>
+                      <ellipse cx="11" cy="22" rx="3" ry="4" transform="rotate(-17 11 22)"/><ellipse cx="18" cy="16" rx="3" ry="4" transform="rotate(-10 18 16)"/><ellipse cx="28" cy="16" rx="3" ry="4" transform="rotate(10 28 16)"/><ellipse cx="36" cy="22" rx="3" ry="4" transform="rotate(17 36 22)"/>
+                    }
+                    @case ('patinha-g') {
+                      <path d="M16 26c-4 3-8 9-4 13 4 4 9-1 12-1s8 5 12 1c4-4 0-10-4-13-5-4-11-4-16 0Z"/>
+                      <ellipse cx="10" cy="21" rx="3.4" ry="4.5" transform="rotate(-18 10 21)"/><ellipse cx="18" cy="15" rx="3.4" ry="4.5" transform="rotate(-9 18 15)"/><ellipse cx="29" cy="15" rx="3.4" ry="4.5" transform="rotate(9 29 15)"/><ellipse cx="38" cy="21" rx="3.4" ry="4.5" transform="rotate(18 38 21)"/>
+                    }
+                    @case ('mini-florzinhas') {
+                      <circle cx="24" cy="24" r="3.4"/><ellipse cx="24" cy="14" rx="5" ry="7"/><ellipse cx="24" cy="34" rx="5" ry="7"/><ellipse cx="14" cy="24" rx="7" ry="5"/><ellipse cx="34" cy="24" rx="7" ry="5"/><path d="m17 17-4-4m18 4 4-4m-18 18-4 4m18-4 4 4"/>
+                    }
+                    @case ('floral') {
+                      <circle cx="24" cy="25" r="3"/><path d="M24 10c-7 5-7 11 0 15 7-4 7-10 0-15Zm14 15c-5-7-11-7-14 0 3 7 9 7 14 0Zm-14 14c7-5 7-11 0-14-7 3-7 9 0 14Zm-14-14c5 7 11 7 14 0-3-7-9-7-14 0Z"/><path d="M17 18 13 14m18 4 4-4M17 32l-4 4m18-4 4 4"/>
+                    }
+                    @case ('coracoezinhos') {
+                      <path d="M24 37 12 25C3 15 17 7 24 18c7-11 21-3 12 7L24 37Z"/>
+                      <path d="m23 26-5-5"/>
+                    }
+                    @default {
+                      <circle cx="24" cy="24" r="15"/><path d="M15 31c2-9 8-13 18-14-1 11-7 16-18 14Z"/>
+                    }
+                  }
+                </svg>
+              </span>
+              <span class="format-information">
+                <span class="format-name">{{ format.name }}</span>
+                <span class="format-meta">{{ format.weight }}</span>
+              </span>
+              <span class="format-active-mark" aria-hidden="true"></span>
             </button>
           }
         </div>
+
         <button type="button" class="format-arrow format-arrow-next"
-          aria-label="Ver próximos formatos"
-          [hidden]="!formatHasOverflow() || !formatCanScrollRight()"
-          (click)="scrollFormats(1)"><span aria-hidden="true">→</span></button>
-      </section>
+          aria-label="Mostrar próximos formatos"
+          [hidden]="!formatCanScrollRight()"
+          (click)="scrollFormats(1)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none"><path d="m10 5 7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </nav>
 
       <button class="mobile-menu-trigger" type="button" (click)="toggleMenu()" aria-label="Abrir menu" [attr.aria-expanded]="isMenuOpen()"><span></span><span></span></button>
       <nav class="mobile-steps" aria-label="Trocar fragrância">
