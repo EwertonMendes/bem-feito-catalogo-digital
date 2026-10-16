@@ -8,6 +8,6 @@ export class CatalogService {
   private readonly http = inject(HttpClient);
 
   load(): Observable<Catalog> {
-    return this.http.get<Catalog>('/data/catalog.json');
+    return this.http.get<Catalog>('data/catalog.json');
   }
 }
