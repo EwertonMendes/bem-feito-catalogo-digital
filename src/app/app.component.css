@@ -123,22 +123,82 @@
 .format-option:disabled { opacity: .35; cursor: not-allowed; }
 .format-option:focus-visible { outline: 1px solid var(--accent); outline-offset: -3px; border-radius: 50%; }
 .format-viewport.is-dragging bf-format-medallion { pointer-events: none; }
-.format-caption {
-  position: absolute; z-index: 3; bottom: calc(100% + 4px);
-  transform: translate(-50%, 6px); opacity: 0; visibility: hidden;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  width: max-content; max-width: min(230px, 70vw);
-  padding: 10px 19px; text-align: center; pointer-events: none;
-  border: 1px solid color-mix(in srgb, var(--accent) 65%, transparent);
-  border-radius: 999px; background: color-mix(in srgb, var(--vignette) 91%, transparent);
-  box-shadow: 0 9px 28px rgba(0,0,0,.23);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  transition: opacity .22s ease, transform .24s ease, visibility .24s;
+/* The caption is an editorial signature, not a tooltip attached to one item.
+   It stays centered independently of horizontal scrolling and pointer position. */
+.format-editorial {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: calc(100% + 2px);
+  width: min(420px, 100%);
+  min-height: 81px;
+  padding: 0 12px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink);
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0 2px 13px rgba(13,6,9,.65), 0 1px 3px rgba(13,6,9,.34);
 }
-.format-caption.is-visible { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
-.format-caption strong { font: 500 17px/1.14 var(--serif); }
-.format-caption small { font: 10px/1.2 Arial, sans-serif; opacity: .81; letter-spacing: .09em; }
-.format-touch-caption { display: none; }
+/* A nearly invisible local vignette improves contrast over bright photographs,
+   without creating another capsule or a rectangular card. */
+.format-editorial::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: min(360px, 100%);
+  height: 116px;
+  left: 50%;
+  bottom: -15px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center,
+    color-mix(in srgb, var(--vignette) 46%, transparent),
+    color-mix(in srgb, var(--vignette) 17%, transparent) 44%,
+    transparent 73%);
+  filter: blur(13px);
+}
+.format-editorial-eyebrow {
+  display: block;
+  color: color-mix(in srgb, var(--ink) 81%, #dbad8a);
+  font: 500 9px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: .27em;
+}
+.format-editorial-name {
+  display: block;
+  max-width: 100%;
+  font: 400 clamp(21px, 1.58vw, 27px)/1.12 var(--serif);
+  letter-spacing: -.018em;
+  text-wrap: balance;
+}
+.format-editorial-detail {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 15px;
+}
+.format-editorial-detail small {
+  display: block;
+  flex: 0 0 auto;
+  font: 400 11px/1.3 Arial, Helvetica, sans-serif;
+  letter-spacing: .07em;
+  color: color-mix(in srgb, var(--ink) 82%, #e5b698);
+}
+.format-editorial-rule {
+  display: block;
+  flex: 0 0 clamp(25px, 3.2vw, 44px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 67%, #e9c3a0));
+  opacity: .89;
+  transform-origin: center;
+}
+.format-editorial-rule:last-child { transform: rotate(180deg); }
 .format-arrow {
   position: absolute; z-index: 4; top: 50%;
   transform: translateY(-50%); display: grid; place-items: center;
@@ -300,14 +360,11 @@
   .format-track { gap: 10px; }
   .format-option { flex-basis: 78px; width: 78px; height: 82px; }
   .format-option bf-format-medallion { --medallion-size: 68px; }
-  .format-caption { display: none; }
-  .format-touch-caption {
-    position: absolute; bottom: calc(100% - 3px); left: 50%; transform: translateX(-50%);
-    display: flex; align-items: baseline; justify-content: center; gap: 9px;
-    max-width: calc(100vw - 35px); white-space: nowrap; pointer-events: none;
-    color: var(--ink); font: 500 17px/1.2 var(--serif); text-shadow: 0 2px 9px rgba(0,0,0,.68);
-  }
-  .format-touch-caption small { font: 11px/1.3 Arial, sans-serif; opacity: .84; }
+  .format-editorial { width: min(320px, calc(100vw - 24px)); bottom: calc(100% + 3px); min-height: 66px; gap: 4px; }
+  .format-editorial::before { height: 98px; }
+  .format-editorial-name { font-size: clamp(19px, 5.5vw, 24px); }
+  .format-editorial-eyebrow { font-size: 8px; }
+  .format-editorial-detail small { font-size: 10px; }
   .format-arrow { display: none; }
   .mobile-swipe-hint { bottom: max(20px,env(safe-area-inset-bottom, 0px) + 10px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; flex-direction: column; gap: 8px; width: 220px; color: #fff; font-size: 9px; line-height: 1.5; text-align: center; letter-spacing: .19em; text-shadow: 0 2px 7px rgba(0,0,0,.58); }
   .hint-up { width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(255,255,255,.8); font-size: 22px; font-weight: 200; line-height: 31px; }
@@ -328,7 +385,9 @@
   .format-carousel { bottom: max(66px,env(safe-area-inset-bottom, 0px) + 57px); }
   .format-option { flex-basis: 69px; width: 69px; height: 74px; }
   .format-option bf-format-medallion { --medallion-size: 59px; }
-  .format-touch-caption { font-size: 15px; }
+  .format-editorial { min-height: 58px; bottom: calc(100% + 1px); gap: 2px; }
+  .format-editorial-name { font-size: 19px; }
+  .format-editorial-detail { gap: 9px; }
   .mobile-swipe-hint { bottom: 10px; }
 }
 @media (max-width: 350px) {
@@ -359,7 +418,10 @@
   .format-carousel { left: 50%; right: auto; width: 86%; bottom: max(112px,9dvh); }
   .format-option { flex-basis: 104px; width: 104px; height: 108px; }
   .format-option bf-format-medallion { --medallion-size: 90px; }
-  .format-touch-caption { font-size: 24px; bottom: calc(100% + 2px); }
+  .format-editorial { width: 420px; min-height: 94px; bottom: calc(100% + 6px); gap: 7px; }
+  .format-editorial-name { font-size: 29px; }
+  .format-editorial-eyebrow { font-size: 11px; }
+  .format-editorial-detail small { font-size: 13px; }
   .mobile-swipe-hint { bottom: max(25px, 3dvh); width: 300px; font-size: 13px; gap: 14px; }
   .hint-up { width: 37px; height: 37px; line-height: 43px; font-size: 32px; }
   .mobile-serial { bottom: 5dvh; right: 4vw; font-size: 16px; }
