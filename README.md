@@ -26,8 +26,8 @@ npm start
 
 ## Testar
 
-- **Desktop:** roda do mouse ou touchpad para mudar a fragrância; setas direita/esquerda/cima/baixo; miniaturas na barra inferior; miniaturas circulares à direita. Menu vertical à esquerda e CTA “Explorar fragrância”.
-- **Mobile:** ative o modo responsivo do Chrome/Edge (F12 → Toggle device toolbar), use viewport de 390×844 ou 360×740. Deslize verticalmente com touch e use indicadores de lado ou menu hambúrguer. Uma fragrância por tela, sem scroll de documento.
+- **Desktop:** roda do mouse ou touchpad para mudar a fragrância; clique e arraste a faixa inferior para ver os formatos ou use as setas redondas quando houver itens ocultos. Clique em um quadro para escolher o formato; miniaturas circulares à direita trocam a fragrância. Menu vertical à esquerda e CTA “Explorar fragrância”.
+- **Mobile:** ative o modo responsivo do Chrome/Edge (F12 → Toggle device toolbar), use viewport de 390×844 ou 360×740. Deslize verticalmente para trocar a fragrância; deslize horizontalmente na faixa inferior para selecionar o próximo formato. Uma fragrância por tela, sem scroll de documento.
 - **Detalhes:** clique em “Explorar fragrância” para conhecer a família olfativa, o perfil, escolher formato e visualizar preço. O painel de detalhes pode rolar internamente, mantendo o fundo parado.
 - **Movimento reduzido:** teste acessibilidade com preferência `prefers-reduced-motion: reduce` (as animações passam a ser instantâneas).
 
@@ -67,3 +67,22 @@ Os links de contato levam ao Instagram `@usebemfeito`, configurado no JSON. Não
 - `public/assets/`: imagens otimizadas WebP e logo oficial
 
 Animação gerenciada por GSAP com limpeza em `ngOnDestroy`. Interações respeitam teclado, foco, `prefers-reduced-motion` e fechamento por Escape. A página principal não usa rolagem nativa nem barra de scroll, apenas navegação entre fragrâncias.
+
+## Miniaturas dos formatos (preparado para as artes finais)
+
+O seletor inferior está centralizado e mostra **sete espaços de imagem vazios**.
+Cada espaço segue a proporção fixa **16:9** e recebe uma imagem inteira, sem
+legenda, preço ou peso sobreposto. Prepare cada arte em **1200 × 675 px**, em
+WebP (pode usar 1600 × 900 px para maior resolução).
+
+Quando a arte estiver pronta:
+
+1. Adicione-a em `public/assets/formats/`, por exemplo `patinha-g.webp`.
+2. Em `public/data/catalog.json`, encontre o objeto com `id: "patinha-g"`.
+3. Substitua `"thumbnail": null` por `"thumbnail": "assets/formats/patinha-g.webp"`.
+
+A imagem ocupa o espaço com `object-fit: cover`. Mantenha nomes e pesos dentro
+da própria imagem, afastados das bordas para não serem cortados. Sem arquivo,
+a área continua vazia, mas clicável, com nome acessível para leitores de tela.
+As alterações de formato continuam independentes da fragrância, e os preços
+permanecem apenas no painel de detalhes.

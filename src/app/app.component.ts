@@ -34,6 +34,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly root = viewChild<ElementRef<HTMLElement>>('stage');
   private readonly formatViewport = viewChild<ElementRef<HTMLElement>>('formatViewport');
   private formatTouchStart: { x: number; y: number } | null = null;
+  private formatDrag: { pointerId: number; startX: number; startScrollLeft: number; dragging: boolean } | null = null;
+  private preventFormatClick = false;
   private readonly prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   private readonly wheelPause = 760;
   private wheelTimestamp = 0;
@@ -55,6 +57,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly error = signal(false);
   readonly selectedFormatId = signal('barra-arredondada');
   readonly transitioning = signal(false);
+  readonly formatDragging = signal(false);
   readonly formatHasOverflow = signal(false);
   readonly formatCanScrollLeft = signal(false);
   readonly formatCanScrollRight = signal(false);
@@ -121,6 +124,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     window.removeEventListener('touchend', this.touchEnd);
     window.removeEventListener('pointermove', this.pointerMove);
     this.transition?.kill();
+    this.formatDrag = null;
     gsap.killTweensOf('.scene-backdrop, .scene-product, .scene-title, .scene-copy, .scene-button, .ambient-layer');
   }
 
@@ -208,6 +212,67 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.formatHasOverflow.set(remaining > 3);
     this.formatCanScrollLeft.set(remaining > 3 && element.scrollLeft > 3);
     this.formatCanScrollRight.set(remaining > 3 && element.scrollLeft < remaining - 3);
+  }
+
+  onFormatPointerDown(event: PointerEvent): void {
+    // Touch stays managed by the existing gesture handler; only mouse drags
+    // initiate manual scrolling here, preserving ordinary button clicks.
+    if (event.pointerType !== 'mouse' || event.button !== 0 || this.transitioning() ||
+        this.isMenuOpen() || this.isInfoOpen()) return;
+    const viewport = this.formatViewport()?.nativeElement;
+    if (!viewport || viewport.scrollWidth <= viewport.clientWidth + 3) return;
+    this.formatDrag = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startScrollLeft: viewport.scrollLeft,
+      dragging: false
+    };
+  }
+
+  onFormatPointerMove(event: PointerEvent): void {
+    const state = this.formatDrag;
+    const viewport = this.formatViewport()?.nativeElement;
+    if (!state || !viewport || state.pointerId !== event.pointerId) return;
+    const moved = event.clientX - state.startX;
+    if (!state.dragging && Math.abs(moved) > 6) {
+      state.dragging = true;
+      this.formatDragging.set(true);
+      viewport.setPointerCapture(event.pointerId);
+    }
+    if (state.dragging) {
+      event.preventDefault();
+      viewport.scrollLeft = state.startScrollLeft - moved;
+      this.refreshFormatArrows(viewport);
+    }
+  }
+
+  onFormatPointerEnd(event: PointerEvent): void {
+    const state = this.formatDrag;
+    if (!state || state.pointerId !== event.pointerId) return;
+    this.formatDrag = null;
+    if (!state.dragging) return;
+    this.formatDragging.set(false);
+    this.preventFormatClick = true;
+    const viewport = this.formatViewport()?.nativeElement;
+    if (viewport?.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
+    // A click resulting from pointerup is dispatched before the next frame.
+    // Block only that click, then restore regular selection.
+    requestAnimationFrame(() => this.preventFormatClick = false);
+  }
+
+  onFormatPointerLeave(event: PointerEvent): void {
+    if (this.formatDrag?.pointerId === event.pointerId && !this.formatDrag.dragging) {
+      this.formatDrag = null;
+    }
+  }
+
+  onFormatClick(event: MouseEvent, format: ProductFormat): void {
+    if (this.preventFormatClick) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    this.setFormat(format);
   }
 
   onFormatTouchStart(event: TouchEvent): void {

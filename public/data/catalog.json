@@ -17,7 +17,8 @@
       "prices": {
         "classica": 11,
         "mais-aroma": 14
-      }
+      },
+      "thumbnail": null
     },
     {
       "id": "massageador",
@@ -26,7 +27,8 @@
       "prices": {
         "classica": 14,
         "mais-aroma": 17
-      }
+      },
+      "thumbnail": null
     },
     {
       "id": "patinha-m",
@@ -35,7 +37,8 @@
       "prices": {
         "classica": 6,
         "mais-aroma": 8
-      }
+      },
+      "thumbnail": null
     },
     {
       "id": "patinha-g",
@@ -44,7 +47,8 @@
       "prices": {
         "classica": 8,
         "mais-aroma": 10
-      }
+      },
+      "thumbnail": null
     },
     {
       "id": "mini-florzinhas",
@@ -53,7 +57,8 @@
       "prices": {
         "classica": 2,
         "mais-aroma": 2.6
-      }
+      },
+      "thumbnail": null
     },
     {
       "id": "floral",
@@ -62,7 +67,8 @@
       "prices": {
         "classica": 13,
         "mais-aroma": 16
-      }
+      },
+      "thumbnail": null
     },
     {
       "id": "coracoezinhos",
@@ -71,7 +77,8 @@
       "prices": {
         "classica": 1.2,
         "mais-aroma": 1.6
-      }
+      },
+      "thumbnail": null
     }
   ],
   "fragrances": [

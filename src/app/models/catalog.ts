@@ -28,6 +28,8 @@ export interface ProductFormat {
   id: string;
   name: string;
   weight: string;
+  /** Image card (16:9, recommended 1200×675 WebP); optional until final artwork is ready. */
+  thumbnail?: string | null;
   prices: Record<CollectionId, number>;
 }
 
