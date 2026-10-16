@@ -92,6 +92,7 @@ a aparência da barra, por exemplo, depende da fragrância selecionada.
 Fragrâncias sem artes próprias exibem o espaço vazio, nunca imagens de outra
 fragrância.
 
-A ordem dos formatos é: Barra arredondada, Massageador, Patinha M, Patinha G,
-Mini Florzinhas, Floral e Coraçõezinhos. O sistema continua permitindo arraste
+A ordem dos formatos é por gramagem crescente: Coraçõezinhos (≈ 1,5 g),
+Mini Florzinhas (≈ 5 g), Patinha M (≈ 40 g), Patinha G (≈ 60 g),
+Barra arredondada (≈ 90 g), Floral (≈ 90 g) e Massageador (≈ 120 g). O sistema continua permitindo arraste
 do carrossel por mouse ou toque, navegação por setas e seleção por clique.

@@ -11,21 +11,21 @@
   },
   "formats": [
     {
-      "id": "barra-arredondada",
-      "name": "Barra arredondada",
-      "weight": "≈ 90 g",
+      "id": "coracoezinhos",
+      "name": "Coraçõezinhos",
+      "weight": "≈ 1,5 g",
       "prices": {
-        "classica": 11,
-        "mais-aroma": 14
+        "classica": 1.2,
+        "mais-aroma": 1.6
       }
     },
     {
-      "id": "massageador",
-      "name": "Massageador",
-      "weight": "≈ 120 g",
+      "id": "mini-florzinhas",
+      "name": "Mini Florzinhas",
+      "weight": "≈ 5 g",
       "prices": {
-        "classica": 14,
-        "mais-aroma": 17
+        "classica": 2,
+        "mais-aroma": 2.6
       }
     },
     {
@@ -47,12 +47,12 @@
       }
     },
     {
-      "id": "mini-florzinhas",
-      "name": "Mini Florzinhas",
-      "weight": "≈ 5 g",
+      "id": "barra-arredondada",
+      "name": "Barra arredondada",
+      "weight": "≈ 90 g",
       "prices": {
-        "classica": 2,
-        "mais-aroma": 2.6
+        "classica": 11,
+        "mais-aroma": 14
       }
     },
     {
@@ -65,12 +65,12 @@
       }
     },
     {
-      "id": "coracoezinhos",
-      "name": "Coraçõezinhos",
-      "weight": "≈ 1,5 g",
+      "id": "massageador",
+      "name": "Massageador",
+      "weight": "≈ 120 g",
       "prices": {
-        "classica": 1.2,
-        "mais-aroma": 1.6
+        "classica": 14,
+        "mais-aroma": 17
       }
     }
   ],
@@ -91,13 +91,13 @@
         "ambient": "#751b31"
       },
       "availableFormats": [
-        "barra-arredondada",
-        "massageador",
+        "coracoezinhos",
+        "mini-florzinhas",
         "patinha-m",
         "patinha-g",
-        "mini-florzinhas",
+        "barra-arredondada",
         "floral",
-        "coracoezinhos"
+        "massageador"
       ],
       "images": {
         "desktopHero": "assets/fragrances/frutas-vermelhas/desktopHero.webp",
@@ -154,13 +154,13 @@
         "ambient": "#6e4a7a"
       },
       "availableFormats": [
-        "barra-arredondada",
-        "massageador",
+        "coracoezinhos",
+        "mini-florzinhas",
         "patinha-m",
         "patinha-g",
-        "mini-florzinhas",
+        "barra-arredondada",
         "floral",
-        "coracoezinhos"
+        "massageador"
       ],
       "images": {
         "desktopHero": "assets/fragrances/lavanda-francesa/desktopHero.webp",
@@ -187,13 +187,13 @@
         "ambient": "#6d772d"
       },
       "availableFormats": [
-        "barra-arredondada",
-        "massageador",
+        "coracoezinhos",
+        "mini-florzinhas",
         "patinha-m",
         "patinha-g",
-        "mini-florzinhas",
+        "barra-arredondada",
         "floral",
-        "coracoezinhos"
+        "massageador"
       ],
       "images": {
         "desktopHero": "assets/fragrances/capim-limao/desktopHero.webp",
