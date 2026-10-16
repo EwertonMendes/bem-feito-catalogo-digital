@@ -153,7 +153,7 @@
   .right-fragrances { top: 9%; }
   .rail-scroll-note { margin-top: 18px; }
 }
-@media (max-width: 720px) {
+@media (max-width: 720px), (orientation: portrait) and (max-width: 1200px) {
   .experience { touch-action: none; }
   .scene-backdrop { opacity: .92; transform: scale(1.02); }
   .scene-backdrop img,.scene-product img { object-position: center center; }
@@ -201,7 +201,7 @@
   .editorial-dialog { padding: 40px 24px; }
   .editorial-dialog p { font-size: 16px; }
 }
-@media (max-width: 720px) and (max-height: 730px) {
+@media (max-width: 720px) and (max-height: 730px), (orientation: portrait) and (min-width: 721px) and (max-width: 1200px) and (max-height: 730px) {
   .brand-area { top: max(17px,env(safe-area-inset-top, 0px) + 6px); }
   .brand-logo { width: 75px; }
   .mobile-menu-trigger { top: max(12px,env(safe-area-inset-top, 0px) + 6px); }
@@ -219,4 +219,24 @@
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; scroll-behavior: auto !important; transition-duration: 0ms !important; }
+}
+
+/* Preserve the dedicated mobile composition in portrait in-app browsers
+   which request an enlarged CSS viewport (e.g. desktop-site mode). */
+@media (orientation: portrait) and (min-width: 721px) and (max-width: 1200px) {
+  .brand-area { top: 2.8dvh; }
+  .brand-logo { width: clamp(105px, 12vw, 155px); }
+  .mobile-menu-trigger { top: 3dvh; right: 4vw; width: 56px; height: 56px; padding: 10px; gap: 9px; }
+  .mobile-menu-trigger span { height: 2.5px; }
+  .main-copy { left: 6.8vw; right: 10vw; top: 24dvh; }
+  .scene-eyebrow { font-size: clamp(14px,1.65vw,19px); margin-bottom: 1.3dvh; }
+  .scene-title { font-size: clamp(67px,8.8vw,104px); max-width: 9.5ch; margin-bottom: 1.7dvh; line-height: .92; }
+  .scene-copy { font-size: clamp(19px,2.4vw,27px); max-width: 28ch; line-height: 1.43; margin-bottom: 2.5dvh; }
+  .explore-button { min-height: 58px; padding: 7px 8px 7px 24px; font-size: 19px; gap: 15px; }
+  .explore-arrow { width: 44px; height: 44px; font-size: 25px; }
+  .mobile-steps { top: 34%; right: 4vw; gap: 21px; }
+  .mobile-steps button { width: 10px; height: 10px; }
+  .mobile-swipe-hint { bottom: max(25px, 3dvh); width: 300px; font-size: 13px; gap: 14px; }
+  .hint-up { width: 37px; height: 37px; line-height: 43px; font-size: 32px; }
+  .mobile-serial { bottom: 5dvh; right: 4vw; font-size: 16px; }
 }
