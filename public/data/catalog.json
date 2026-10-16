@@ -17,8 +17,7 @@
       "prices": {
         "classica": 11,
         "mais-aroma": 14
-      },
-      "thumbnail": null
+      }
     },
     {
       "id": "massageador",
@@ -27,8 +26,7 @@
       "prices": {
         "classica": 14,
         "mais-aroma": 17
-      },
-      "thumbnail": null
+      }
     },
     {
       "id": "patinha-m",
@@ -37,8 +35,7 @@
       "prices": {
         "classica": 6,
         "mais-aroma": 8
-      },
-      "thumbnail": null
+      }
     },
     {
       "id": "patinha-g",
@@ -47,8 +44,7 @@
       "prices": {
         "classica": 8,
         "mais-aroma": 10
-      },
-      "thumbnail": null
+      }
     },
     {
       "id": "mini-florzinhas",
@@ -57,8 +53,7 @@
       "prices": {
         "classica": 2,
         "mais-aroma": 2.6
-      },
-      "thumbnail": null
+      }
     },
     {
       "id": "floral",
@@ -67,8 +62,7 @@
       "prices": {
         "classica": 13,
         "mais-aroma": 16
-      },
-      "thumbnail": null
+      }
     },
     {
       "id": "coracoezinhos",
@@ -77,8 +71,7 @@
       "prices": {
         "classica": 1.2,
         "mais-aroma": 1.6
-      },
-      "thumbnail": null
+      }
     }
   ],
   "fragrances": [
@@ -113,6 +106,36 @@
         "mobileBackground": "assets/fragrances/frutas-vermelhas/mobileBackground.webp",
         "avatar": "assets/fragrances/frutas-vermelhas/avatar.webp",
         "detail": "assets/fragrances/frutas-vermelhas/detail.webp"
+      },
+      "formatImages": {
+        "barra-arredondada": {
+          "small": "assets/formats/frutas-vermelhas/barra-arredondada-640.webp",
+          "large": "assets/formats/frutas-vermelhas/barra-arredondada-1200.webp"
+        },
+        "massageador": {
+          "small": "assets/formats/frutas-vermelhas/massageador-640.webp",
+          "large": "assets/formats/frutas-vermelhas/massageador-1200.webp"
+        },
+        "patinha-m": {
+          "small": "assets/formats/frutas-vermelhas/patinha-m-640.webp",
+          "large": "assets/formats/frutas-vermelhas/patinha-m-1200.webp"
+        },
+        "patinha-g": {
+          "small": "assets/formats/frutas-vermelhas/patinha-g-640.webp",
+          "large": "assets/formats/frutas-vermelhas/patinha-g-1200.webp"
+        },
+        "mini-florzinhas": {
+          "small": "assets/formats/frutas-vermelhas/mini-florzinhas-640.webp",
+          "large": "assets/formats/frutas-vermelhas/mini-florzinhas-1200.webp"
+        },
+        "floral": {
+          "small": "assets/formats/frutas-vermelhas/floral-640.webp",
+          "large": "assets/formats/frutas-vermelhas/floral-1200.webp"
+        },
+        "coracoezinhos": {
+          "small": "assets/formats/frutas-vermelhas/coracoezinhos-640.webp",
+          "large": "assets/formats/frutas-vermelhas/coracoezinhos-1200.webp"
+        }
       }
     },
     {

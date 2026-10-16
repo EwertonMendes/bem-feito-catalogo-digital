@@ -68,21 +68,30 @@ Os links de contato levam ao Instagram `@usebemfeito`, configurado no JSON. Não
 
 Animação gerenciada por GSAP com limpeza em `ngOnDestroy`. Interações respeitam teclado, foco, `prefers-reduced-motion` e fechamento por Escape. A página principal não usa rolagem nativa nem barra de scroll, apenas navegação entre fragrâncias.
 
-## Miniaturas dos formatos (preparado para as artes finais)
+## Miniaturas dos formatos por fragrância
 
-O seletor inferior está centralizado e mostra **sete espaços de imagem vazios**.
-Cada espaço segue a proporção fixa **16:9** e recebe uma imagem inteira, sem
-legenda, preço ou peso sobreposto. Prepare cada arte em **1200 × 675 px**, em
-WebP (pode usar 1600 × 900 px para maior resolução).
+O carrossel mantém a ordem definida em `catalog.formats` e a escolha do formato
+permanece independente da fragrância ativa. Cada fragrância possui seu próprio
+mapa opcional `formatImages`, indexado pelo ID exato do formato.
 
-Quando a arte estiver pronta:
+As sete artes de **Frutas Vermelhas** estão em
+`public/assets/formats/frutas-vermelhas/` com duas versões WebP por formato:
 
-1. Adicione-a em `public/assets/formats/`, por exemplo `patinha-g.webp`.
-2. Em `public/data/catalog.json`, encontre o objeto com `id: "patinha-g"`.
-3. Substitua `"thumbnail": null` por `"thumbnail": "assets/formats/patinha-g.webp"`.
+- `<formato>-640.webp` — 640 × 360 px, para os cartões em telas normais;
+- `<formato>-1200.webp` — 1200 × 675 px, para telas de alta densidade.
 
-A imagem ocupa o espaço com `object-fit: cover`. Mantenha nomes e pesos dentro
-da própria imagem, afastados das bordas para não serem cortados. Sem arquivo,
-a área continua vazia, mas clicável, com nome acessível para leitores de tela.
-As alterações de formato continuam independentes da fragrância, e os preços
-permanecem apenas no painel de detalhes.
+O Angular escolhe a resolução por `srcset`/`sizes`. As artes são apresentadas
+inteiras com `object-fit: contain`, na proporção exata de 16:9, sem cortes nem
+texto/gramagem duplicados por cima das fotografias. Nome e peso continuam no
+`aria-label` do botão, preservando acessibilidade.
+
+Para cadastrar outra fragrância, adicione os WebP em sua própria pasta e o
+respectivo objeto `formatImages` dentro da fragrância em
+`public/data/catalog.json`. Não coloque uma imagem global no formato:
+a aparência da barra, por exemplo, depende da fragrância selecionada.
+Fragrâncias sem artes próprias exibem o espaço vazio, nunca imagens de outra
+fragrância.
+
+A ordem dos formatos é: Barra arredondada, Massageador, Patinha M, Patinha G,
+Mini Florzinhas, Floral e Coraçõezinhos. O sistema continua permitindo arraste
+do carrossel por mouse ou toque, navegação por setas e seleção por clique.

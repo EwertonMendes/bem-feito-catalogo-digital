@@ -82,8 +82,15 @@
               [attr.aria-label]="format.name + ', ' + format.weight"
               (click)="onFormatClick($event, format)">
               <span class="format-image-slot" aria-hidden="true">
-                @if (format.thumbnail) {
-                  <img class="format-image" [src]="format.thumbnail" alt="" loading="lazy" draggable="false">
+                @if (fragrance.formatImages?.[format.id]; as art) {
+                  <img class="format-image"
+                    [src]="art.small"
+                    [attr.srcset]="art.small + ' 640w, ' + art.large + ' 1200w'"
+                    sizes="(max-width: 720px) 175px, 226px"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false">
                 }
               </span>
             </button>

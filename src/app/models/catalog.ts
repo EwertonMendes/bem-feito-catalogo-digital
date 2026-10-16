@@ -10,6 +10,11 @@ export interface FragranceAssets {
   detail: string;
 }
 
+export interface FormatImageSources {
+  small: string;
+  large: string;
+}
+
 export interface Fragrance {
   id: string;
   name: string;
@@ -21,6 +26,8 @@ export interface Fragrance {
   feeling: string;
   colors: { ink: string; accent: string; vignette: string; ambient: string };
   availableFormats: string[];
+  /** Artwork per format for this specific fragrance; missing entries remain unillustrated. */
+  formatImages?: Record<string, FormatImageSources>;
   images: FragranceAssets;
 }
 
@@ -28,8 +35,6 @@ export interface ProductFormat {
   id: string;
   name: string;
   weight: string;
-  /** Image card (16:9, recommended 1200×675 WebP); optional until final artwork is ready. */
-  thumbnail?: string | null;
   prices: Record<CollectionId, number>;
 }
 
