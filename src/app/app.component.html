@@ -8,12 +8,12 @@
       <!-- The scene is edge-to-edge. Background and foreground are independently animated. -->
       <div class="photographic-scene" aria-hidden="true">
         <picture class="scene-backdrop scene-backdrop-visual">
-          <source media="(max-width: 720px)" [srcset]="fragrance.images.mobileBackground" />
+          <source media="(max-width: 720px), (orientation: portrait) and (max-width: 1200px)" [srcset]="fragrance.images.mobileBackground" />
           <img [src]="fragrance.images.desktopBackground" alt="" />
         </picture>
         <div class="ambient-layer"></div>
         <picture class="scene-product">
-          <source media="(max-width: 720px)" [srcset]="fragrance.images.mobileHero" />
+          <source media="(max-width: 720px), (orientation: portrait) and (max-width: 1200px)" [srcset]="fragrance.images.mobileHero" />
           <img [src]="fragrance.images.desktopHero" alt="" [attr.fetchpriority]="activeIndex() === 0 ? 'high' : 'auto'" />
         </picture>
         <div class="scene-shadow"></div>
