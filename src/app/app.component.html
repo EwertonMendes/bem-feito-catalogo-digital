@@ -37,12 +37,6 @@
         <button type="button" (click)="openSection('contact')">Contato</button>
       </nav>
 
-      <div class="signature" aria-hidden="true">
-        <span class="signature-line"></span>
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M5 21C6 11 12 5 22 3C23 13 18 21 8 22M8 22c4-7 7-12 13-17" stroke="currentColor" stroke-width="1.3"/></svg>
-        <span>UM CATÁLOGO<br />SENSORIAL<br />EM TELA CHEIA</span>
-      </div>
-
       <section class="main-copy" aria-live="polite" aria-atomic="true">
         <div class="scene-eyebrow">{{ fragrance.collectionLabel }}</div>
         <h1 class="scene-title">{{ fragrance.name }}</h1>
@@ -67,16 +61,39 @@
         <span class="rail-scroll-note"><span class="mini-mouse" aria-hidden="true"></span>ROLE PARA EXPLORAR</span>
       </div>
 
-      <div class="thumbnail-nav" aria-label="Atalhos para fragrâncias">
-        @for (item of fragrances(); track item.id; let i = $index) {
-          <button type="button" class="thumbnail" [class.is-current]="isSelected(i)" (click)="goTo(i)" [disabled]="transitioning()" [attr.aria-label]="'Selecionar ' + item.name">
-            <img [src]="item.images.avatar" alt="" loading="lazy" />
-            <span class="thumbnail-gradient"></span>
-            <span class="thumbnail-title">{{ item.name }}</span>
-            <span class="thumbnail-index">{{ (i + 1).toString().padStart(2, '0') }}</span>
-          </button>
-        }
-      </div>
+      <!-- One fragrance + one format: these selections remain independent. -->
+      <section class="format-carousel" aria-label="Escolher formato do sabonete">
+        <div class="format-heading">
+          <span>FORMATOS DE SABONETE</span>
+          <span class="format-current" aria-live="polite">{{ selectedFormat()?.name }} <span aria-hidden="true">·</span> {{ selectedPrice() }}</span>
+        </div>
+        <button type="button" class="format-arrow format-arrow-prev"
+          aria-label="Ver formatos anteriores"
+          [hidden]="!formatHasOverflow() || !formatCanScrollLeft()"
+          (click)="scrollFormats(-1)"><span aria-hidden="true">←</span></button>
+        <div #formatViewport class="format-viewport"
+          (scroll)="refreshFormatArrows()"
+          (touchstart)="onFormatTouchStart($event)"
+          (touchend)="onFormatTouchEnd($event)">
+          @for (format of formats(); track format.id; let i = $index) {
+            <button type="button" class="format-option"
+              [attr.data-format-id]="format.id"
+              [class.is-selected]="selectedFormatId() === format.id"
+              [disabled]="!fragrance.availableFormats.includes(format.id)"
+              [attr.aria-pressed]="selectedFormatId() === format.id"
+              [attr.aria-label]="format.name + ', ' + format.weight + ', ' + formatPrice(format)"
+              (click)="setFormat(format)">
+              <span class="format-name">{{ format.name }}</span>
+              <span class="format-meta">{{ format.weight }} <span aria-hidden="true">·</span> {{ formatPrice(format) }}</span>
+              <span class="format-index">{{ (i + 1).toString().padStart(2, '0') }}</span>
+            </button>
+          }
+        </div>
+        <button type="button" class="format-arrow format-arrow-next"
+          aria-label="Ver próximos formatos"
+          [hidden]="!formatHasOverflow() || !formatCanScrollRight()"
+          (click)="scrollFormats(1)"><span aria-hidden="true">→</span></button>
+      </section>
 
       <button class="mobile-menu-trigger" type="button" (click)="toggleMenu()" aria-label="Abrir menu" [attr.aria-expanded]="isMenuOpen()"><span></span><span></span></button>
       <nav class="mobile-steps" aria-label="Trocar fragrância">
