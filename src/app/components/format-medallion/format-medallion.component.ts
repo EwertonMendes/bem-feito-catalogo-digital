@@ -1,0 +1,51 @@
+import {
+  AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy,
+  ElementRef, effect, input, viewChild,
+} from '@angular/core';
+import gsap from 'gsap';
+import { ProductFormat } from '../../models/catalog';
+import { FormatIconComponent } from '../format-icon/format-icon.component';
+
+/** Pure visual button content. The parent remains in charge of selection and carousel gestures. */
+@Component({
+  selector: 'bf-format-medallion',
+  standalone: true,
+  imports: [FormatIconComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <span #disc class="format-disc" [class.is-selected]="selected()" aria-hidden="true">
+      <span class="disc-sheen"></span>
+      <bf-format-icon [formatId]="format().id" />
+    </span>
+  `,
+  styleUrl: './format-medallion.component.css',
+})
+export class FormatMedallionComponent implements AfterViewInit, OnDestroy {
+  readonly format = input.required<ProductFormat>();
+  readonly selected = input(false);
+  readonly expanded = input(false);
+  private readonly disc = viewChild<ElementRef<HTMLElement>>('disc');
+  private animation?: gsap.core.Timeline;
+  private readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  constructor() {
+    effect(() => {
+      const show = this.expanded();
+      if (this.animation) {
+        if (show) this.animation.play();
+        else this.animation.reverse();
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    const disc = this.disc()?.nativeElement;
+    if (!disc || this.reducedMotion.matches) return;
+    this.animation = gsap.timeline({ paused: true }).to(disc, {
+      scale: 1.09, y: -3, duration: .26, ease: 'power2.out', transformOrigin: 'center center',
+    });
+    if (this.expanded()) this.animation.progress(1);
+  }
+
+  ngOnDestroy(): void { this.animation?.kill(); }
+}

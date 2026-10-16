@@ -1,0 +1,11 @@
+:host { display: block; width: 100%; height: 100%; pointer-events: none; color: var(--ink); }
+.soap-art { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 4px 5px rgba(12,6,8,.18)); }
+.soap-etched { stroke: var(--soap-contour); stroke-width: 1.35; stroke-linejoin: round; }
+.soap-underside { fill: var(--soap-shadow); opacity: .72; }
+.soap-rim { fill: var(--soap-shadow); stroke: var(--soap-contour); stroke-width: 1.3; }
+.soap-inner { fill: none; stroke: var(--soap-highlight); stroke-width: 1; opacity: .6; }
+.soap-gleam { stroke: var(--soap-gleam); stroke-width: 2; stroke-linecap: round; opacity: .83; }
+.soap-petal { fill: var(--soap-face); fill-opacity: .92; stroke: var(--soap-contour); stroke-width: 1.2; }
+.soap-core { fill: var(--soap-highlight); stroke: var(--soap-contour); stroke-width: 1.2; }
+.soap-dot { fill: var(--soap-shadow); opacity: .83; }
+.soap-nubs ellipse { fill: var(--soap-highlight); stroke: var(--soap-contour); stroke-width: 1.1; }

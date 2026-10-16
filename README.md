@@ -68,31 +68,16 @@ Os links de contato levam ao Instagram `@usebemfeito`, configurado no JSON. Não
 
 Animação gerenciada por GSAP com limpeza em `ngOnDestroy`. Interações respeitam teclado, foco, `prefers-reduced-motion` e fechamento por Escape. A página principal não usa rolagem nativa nem barra de scroll, apenas navegação entre fragrâncias.
 
-## Miniaturas dos formatos por fragrância
+## Formatos em medalhões vetoriais
 
-O carrossel mantém a ordem definida em `catalog.formats` e a escolha do formato
-permanece independente da fragrância ativa. Cada fragrância possui seu próprio
-mapa opcional `formatImages`, indexado pelo ID exato do formato.
+O seletor inferior exibe sete desenhos SVG, um por molde, na ordem de gramagem
+crescente definida em `public/data/catalog.json`. O `FormatIconComponent` mantém
+os desenhos independentes das fragrâncias; a paleta vem das variáveis do tema.
+O `FormatMedallionComponent` utiliza GSAP para ampliar suavemente no hover,
+e reverter a animação ao sair. A legenda fica fora da área de scroll para não
+ser cortada. Em telas touch, a legenda mostra o formato selecionado.
 
-As sete artes de **Frutas Vermelhas** estão em
-`public/assets/formats/frutas-vermelhas/` com duas versões WebP por formato:
-
-- `<formato>-640.webp` — 640 × 360 px, para os cartões em telas normais;
-- `<formato>-1200.webp` — 1200 × 675 px, para telas de alta densidade.
-
-O Angular escolhe a resolução por `srcset`/`sizes`. As artes são apresentadas
-inteiras com `object-fit: contain`, na proporção exata de 16:9, sem cortes nem
-texto/gramagem duplicados por cima das fotografias. Nome e peso continuam no
-`aria-label` do botão, preservando acessibilidade.
-
-Para cadastrar outra fragrância, adicione os WebP em sua própria pasta e o
-respectivo objeto `formatImages` dentro da fragrância em
-`public/data/catalog.json`. Não coloque uma imagem global no formato:
-a aparência da barra, por exemplo, depende da fragrância selecionada.
-Fragrâncias sem artes próprias exibem o espaço vazio, nunca imagens de outra
-fragrância.
-
-A ordem dos formatos é por gramagem crescente: Coraçõezinhos (≈ 1,5 g),
-Mini Florzinhas (≈ 5 g), Patinha M (≈ 40 g), Patinha G (≈ 60 g),
-Barra arredondada (≈ 90 g), Floral (≈ 90 g) e Massageador (≈ 120 g). O sistema continua permitindo arraste
-do carrossel por mouse ou toque, navegação por setas e seleção por clique.
+O carrossel preserva as setas condicionais, o arraste horizontal no desktop,
+o toque no celular e a seleção independente da fragrância. Os arquivos WebP
+de formatos anteriores permanecem apenas como recursos legados não usados no
+renderizador, para remoção após aprovação da nova identidade.
