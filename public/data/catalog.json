@@ -178,6 +178,15 @@
         "mobileBackground": "assets/fragrances/lavanda-francesa/mobileBackground.webp",
         "avatar": "assets/fragrances/lavanda-francesa/avatar.webp",
         "detail": "assets/fragrances/lavanda-francesa/detail.webp"
+      },
+      "medallionImages": {
+        "coracoezinhos": "assets/format-medallions/lavanda-francesa/coracoezinhos.webp",
+        "mini-florzinhas": "assets/format-medallions/lavanda-francesa/mini-florzinhas.webp",
+        "patinha-m": "assets/format-medallions/lavanda-francesa/patinha-m.webp",
+        "patinha-g": "assets/format-medallions/lavanda-francesa/patinha-g.webp",
+        "barra-arredondada": "assets/format-medallions/lavanda-francesa/barra-arredondada.webp",
+        "floral": "assets/format-medallions/lavanda-francesa/floral.webp",
+        "massageador": "assets/format-medallions/lavanda-francesa/massageador.webp"
       }
     },
     {
